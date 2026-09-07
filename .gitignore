@@ -1,0 +1,21 @@
+# Visual Studio and local user files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.DotSettings.user
+
+# Build output
+**/bin/
+**/obj/
+release/
+releases/
+artifacts/
+*.binlog
+
+# Local development and release files
+/SPTEssentials.sln
+/Directory.Build.props
+/build-release.ps1
+/packaging/

@@ -1,0 +1,53 @@
+## {.tabset}
+
+### SPT ESSENTIALS
+
+I built SPT Essentials as a modular collection of small quality-of-life improvements that are hard to give up once you have used them. It combines my own gameplay tweaks with carefully credited adaptations of two open-source mods and an independently made compact status display.
+
+I made every module optional. You can enable or disable each one in the `F12` configuration menu and keep only the parts that suit your game.
+
+I made this release for **SPT 4.1.5**. Later `4.1.x` versions may work, but I only claim support for versions I have tested.
+
+### WHAT IS INCLUDED
+
+- **Field Repair** adds the Field Armor Repair Kit. During a raid, drag it onto compatible damaged armor to repair it immediately. Outside raids, the normal repair screen is left alone.
+- **Quickload Mag Saver** tries to place the old magazine in a free rig, pocket or inventory grid during a quick reload. When there is no room, the magazine still drops as usual.
+- **Raid Pause** freezes a solo raid, including the raid timer and time of day. The default key is `Down Arrow`.
+- **Smart Air Filter** makes the Hideout air filter consume resources only while your PMC is in a raid.
+- **Expanded Special Slots** adds three more Special Slots and arranges all six in a compact grid. Active SVM custom pocket layouts are supported.
+- **Compatibility Rules** lets you extend item, container, Special Slot, weapon and attachment filters through one readable JSONC file.
+- **Compact HUD** shows total health, energy, hydration and grenades that are ready in your rig or pockets. It can be moved, scaled and arranged horizontally or vertically.
+
+### INSTALLATION AND SETTINGS
+
+Copy the contents of the release into your main SPT folder and allow Windows to merge the folders.
+
+Press `F12` in game to enable or disable individual modules and adjust Raid Pause or Compact HUD. Compact HUD uses `F10` for edit mode and `F9` to restore its default position.
+
+Field Repair, Smart Air Filter, Expanded Special Slots and Compatibility Rules also change server-side behavior. Restart both the SPT server and the game after changing one of those switches.
+
+Compatibility rules live here:
+
+```text
+SPT_Runtime/user/mods/SPTEssentials/config/compat/compatibility.jsonc
+```
+
+The file contains commented examples. Add your template IDs, keep `REPLACE` set to `false` unless you intentionally want to clear an existing filter, then restart SPT.
+
+If you previously installed my standalone Compact HUD, remove it before using SPT Essentials. I have included that functionality here, so running both versions would load it twice.
+
+### LICENSE
+
+I release my contributions to SPT Essentials under the [MIT License](LICENSE). You may use, modify and redistribute them as long as you keep the applicable copyright and license notices.
+
+Raid Pause and Smart Air Filter include adaptations of separately copyrighted MIT-licensed work. I preserve those original notices in `THIRD-PARTY-NOTICES.md` and the `licenses` folder. The permissions I received from netVnum and Utjan are also recorded there.
+
+### CREDITS
+
+I adapted and reimplemented **Raid Pause** for SPT 4.1.5 based on the MIT-licensed [Pause](https://github.com/netvnum/Pause), currently maintained by **netVnum** and originally created by **swaffordm**. My implementation uses the same underlying pause and timer-correction ideas, but I restructured it for SPT Essentials and the current game version. I also received explicit permission from **netVnum** to adapt and include Pause in SPT Essentials.
+
+I adapted and reimplemented **Smart Air Filter** for SPT 4.1.5 based on the MIT-licensed [AirFilterQOL](https://github.com/Utjan/AirFilterQOL) and [SPTAirFilterQOLClientMod](https://github.com/Utjan/SPTAirFilterQOLClientMod) by **Utjan**. My implementation follows their core approach of stopping air-filter drain outside a PMC raid and adds its own client-side safeguard. I also received explicit permission from **Utjan** to adapt and include this functionality in SPT Essentials. The AirFilterQOL license names **Jehree** as its copyright holder.
+
+I wrote **Compact HUD** independently as a lightweight take on the general HUD concept popularized by [Game Panel HUD](https://github.com/kmyuhkyuk/GamePanelHUD) by **kmyuhkyuk**. I did not copy, modify or distribute any Game Panel HUD code, assets, localization or dependencies.
+
+I include the applicable MIT notices for Pause and AirFilterQOL in `THIRD-PARTY-NOTICES.md` and the `licenses` folder. Field Repair, Quickload Mag Saver and the remaining SPT Essentials modules are my own implementations.

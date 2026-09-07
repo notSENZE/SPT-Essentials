@@ -1,0 +1,35 @@
+{
+  "rules": [
+    // Container or case example:
+    // {
+    //   "TARGET-TPL": "PUT_TARGET_CONTAINER_TPL_HERE",
+    //   "ALLOWED_TPLS": [
+    //     "PUT_ALLOWED_ITEM_OR_CATEGORY_TPL_HERE"
+    //   ],
+    //   "GRID_INDEXES": null,
+    //   "REPLACE": false
+    // },
+
+    // Special Slot example. GRID_INDEXES uses slot numbers 1 through 6:
+    // {
+    //   "TARGET-TPL": "@PMC_SPECIALSLOTS",
+    //   "ALLOWED_TPLS": [
+    //     "PUT_ALLOWED_ITEM_OR_CATEGORY_TPL_HERE"
+    //   ],
+    //   "GRID_INDEXES": [1, 2, 3, 4, 5, 6],
+    //   "REPLACE": false
+    // },
+
+    // Weapon or attachment example:
+    // {
+    //   "TARGET-TPL": "PUT_WEAPON_OR_ATTACHMENT_TPL_HERE",
+    //   "ALLOWED_TPLS": [
+    //     "PUT_ALLOWED_PART_TPL_HERE"
+    //   ],
+    //   "SLOT_NAMES": [
+    //     "mod_scope"
+    //   ],
+    //   "REPLACE": false
+    // }
+  ]
+}

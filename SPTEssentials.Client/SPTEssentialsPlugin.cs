@@ -1,0 +1,61 @@
+using BepInEx;
+using BepInEx.Logging;
+using SPTEssentials.Client.AirFilter;
+using SPTEssentials.Client.CompactHud;
+using SPTEssentials.Client.FieldRepair;
+using SPTEssentials.Client.Pause;
+using SPTEssentials.Client.Reload;
+using SPTEssentials.Client.SpecialSlots;
+
+namespace SPTEssentials.Client;
+
+[BepInPlugin(PluginGuid, PluginName, PluginVersion)]
+[BepInDependency("com.SPT.core", "4.1.5")]
+public sealed class SPTEssentialsPlugin : BaseUnityPlugin
+{
+    internal const string PluginGuid = "com.senze.sptessentials";
+    internal const string PluginName = "Senze-SPTEssentials";
+    internal const string PluginVersion = "1.0.0";
+
+    internal static ManualLogSource Log { get; private set; }
+    internal static EssentialsConfig Settings { get; private set; }
+
+    private RaidPauseModule _pause;
+    private CompactHudController _compactHud;
+
+    private void Awake()
+    {
+        Log = Logger;
+        Settings = new EssentialsConfig(Config);
+        CompactHudSettings.Bind(Config, Settings.EnableCompactHud);
+
+        _pause = new RaidPauseModule();
+        _compactHud = new CompactHudController();
+
+        _pause.EnableSafely();
+        new MagazineRetentionModule().EnableSafely();
+        new ExtraSpecialSlotsLayoutModule().EnableSafely();
+        new FieldArmorRepairModule().EnableSafely();
+        new RaidOnlyAirFilterModule().EnableSafely();
+
+        Log.LogInfo($"{PluginName} {PluginVersion} loaded for SPT 4.1.x.");
+    }
+
+    private void Update()
+    {
+        _pause?.Update();
+        _compactHud?.Tick();
+    }
+
+    private void OnGUI()
+    {
+        _pause?.OnGui();
+        _compactHud?.Draw();
+    }
+
+    private void OnDestroy()
+    {
+        _pause?.Shutdown();
+        _compactHud?.Dispose();
+    }
+}
