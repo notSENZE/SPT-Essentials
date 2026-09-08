@@ -15,7 +15,7 @@ public sealed class SPTEssentialsPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "com.senze.sptessentials";
     internal const string PluginName = "Senze-SPTEssentials";
-    internal const string PluginVersion = "1.0.0";
+    internal const string PluginVersion = "1.0.1";
 
     internal static ManualLogSource Log { get; private set; }
     internal static EssentialsConfig Settings { get; private set; }

@@ -6,7 +6,12 @@ I built SPT Essentials as a single modular quality-of-life mod full of small imp
 
 I made every module optional. You can enable or disable each one in the `F12` configuration menu and keep only the parts that suit your game.
 
-I made this release for **SPT 4.1.5**. Later `4.1.x` versions may work, but I only claim support for versions I have tested.
+I made **SPT Essentials 1.0.1** for **SPT 4.1.5**. Later `4.1.x` versions may work, but I only claim support for versions I have tested.
+
+#### 1.0.1 hotfix
+
+- I fixed the Special Slots layout error that could interrupt the transit delivery screen.
+- I fixed item icons disappearing from Special Slots after the layout was rebuilt, including when entering the Hideout.
 
 ### WHAT IS INCLUDED
 
