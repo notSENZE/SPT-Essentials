@@ -2,7 +2,7 @@
 
 ### SPT ESSENTIALS
 
-I built SPT Essentials as a modular collection of small quality-of-life improvements that are hard to give up once you have used them. It combines my own gameplay tweaks with carefully credited adaptations of two open-source mods and an independently made compact status display.
+I built SPT Essentials as a single modular quality-of-life mod full of small improvements that are hard to give up once you have used them. It combines my own gameplay tweaks with carefully credited adaptations of two open-source mods and an independently made compact status display.
 
 I made every module optional. You can enable or disable each one in the `F12` configuration menu and keep only the parts that suit your game.
 
@@ -36,6 +36,17 @@ The file contains commented examples. Add your template IDs, keep `REPLACE` set 
 
 If you previously installed my standalone Compact HUD, remove it before using SPT Essentials. I have included that functionality here, so running both versions would load it twice.
 
+### SOURCE AND BUILDING
+
+I publish the exact source used for this release on [GitHub](https://github.com/notSENZE/SPT-Essentials).
+
+To build it yourself, point `SPTInstallPath` at a clean SPT 4.1.5 installation and build both projects:
+
+```powershell
+dotnet build .\SPTEssentials.Client\SPTEssentials.Client.csproj -c Release -p:SPTInstallPath="C:\Path\To\SPT"
+dotnet build .\SPTEssentials.Server\SPTEssentials.Server.csproj -c Release -p:SPTInstallPath="C:\Path\To\SPT"
+```
+
 ### LICENSE
 
 I release my contributions to SPT Essentials under the [MIT License](LICENSE). You may use, modify and redistribute them as long as you keep the applicable copyright and license notices.
@@ -51,3 +62,23 @@ I adapted and reimplemented **Smart Air Filter** for SPT 4.1.5 based on the MIT-
 I wrote **Compact HUD** independently as a lightweight take on the general HUD concept popularized by [Game Panel HUD](https://github.com/kmyuhkyuk/GamePanelHUD) by **kmyuhkyuk**. I did not copy, modify or distribute any Game Panel HUD code, assets, localization or dependencies.
 
 I include the applicable MIT notices for Pause and AirFilterQOL in `THIRD-PARTY-NOTICES.md` and the `licenses` folder. Field Repair, Quickload Mag Saver and the remaining SPT Essentials modules are my own implementations.
+
+### AI TRANSPARENCY
+
+Just to be completely open about it: I’m not a trained software developer, and I don’t understand every single part of the code yet. I’m learning as I go.
+
+A large part of the code was implemented with the help of Codex. It also helps me find the right classes and APIs, read telemetry logs, track down bugs and work on the documentation.
+
+The idea behind the mod, its features, balancing, design decisions and the final say on what gets released all come from me. I don’t simply take generated code and throw it into a release.
+
+New features are tested in-game, checked through logs and, whenever something is unclear, compared against the public SPT source code. If something cannot be properly verified or tested, it gets put aside for later.
+
+That doesn’t mean mistakes can’t happen, especially while I’m still learning. At the end of the day, though, I’m responsible for the mod I publish and for the decisions made along the way, not the tool I used to help build it.
+
+I know that AI-assisted mods are a touchy subject in parts of the community, and I understand why. That’s exactly why I want to be honest about how AI was used here.
+
+The source code is publicly available, and constructive code reviews, specific suggestions and reproducible bug reports are always welcome.
+
+### SUPPORT ME
+
+If you enjoy my work and want to support it, you can find me on [Ko-fi](https://ko-fi.com/not_senze).
