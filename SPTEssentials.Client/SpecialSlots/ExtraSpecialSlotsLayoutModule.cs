@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using EFT.InventoryLogic;
@@ -12,6 +14,7 @@ namespace SPTEssentials.Client.SpecialSlots;
 internal sealed class ExtraSpecialSlotsLayoutModule : ClientModule
 {
     private const int ColumnCount = 3;
+    private static readonly HashSet<int> PendingPanels = new HashSet<int>();
     private static readonly FieldInfo SpecialSlotPanel = AccessTools.Field(
         typeof(SearchableSlotView),
         "_specSlotsPanel");
@@ -42,31 +45,78 @@ internal sealed class ExtraSpecialSlotsLayoutModule : ClientModule
             var panel = SpecialSlotPanel?.GetValue(__instance) as RectTransform;
             if (panel != null)
             {
-                ArrangeAsGrid(panel);
+                QueueGridLayout(panel);
             }
         }
     }
 
-    private static void ArrangeAsGrid(RectTransform panel)
+    private static void QueueGridLayout(RectTransform panel)
     {
         var grid = panel.GetComponent<GridLayoutGroup>();
-        if (grid == null)
+        if (grid != null)
         {
-            var oldLayout = panel.GetComponent<HorizontalLayoutGroup>();
-            var oldPadding = oldLayout?.padding;
-            var oldSpacing = oldLayout?.spacing ?? 0f;
-            if (oldLayout != null)
-            {
-                UnityEngine.Object.DestroyImmediate(oldLayout);
-            }
-
-            grid = panel.gameObject.AddComponent<GridLayoutGroup>();
-            grid.padding = oldPadding == null
-                ? new RectOffset()
-                : new RectOffset(oldPadding.left, oldPadding.right, oldPadding.top, oldPadding.bottom);
-            grid.spacing = new Vector2(oldSpacing, oldSpacing);
+            ConfigureGrid(panel, grid);
+            return;
         }
 
+        var plugin = SPTEssentialsPlugin.Instance;
+        if (plugin == null)
+        {
+            return;
+        }
+
+        var panelId = panel.GetInstanceID();
+        if (PendingPanels.Add(panelId))
+        {
+            plugin.StartCoroutine(ReplaceLayout(panel, panelId));
+        }
+    }
+
+    private static IEnumerator ReplaceLayout(RectTransform panel, int panelId)
+    {
+        try
+        {
+            if (panel == null)
+            {
+                yield break;
+            }
+
+            var oldLayout = panel.GetComponent<HorizontalLayoutGroup>();
+            var oldPadding = CopyPadding(oldLayout?.padding);
+            var oldSpacing = oldLayout?.spacing ?? 0f;
+
+            if (oldLayout != null)
+            {
+                UnityEngine.Object.Destroy(oldLayout);
+                yield return null;
+            }
+
+            if (panel == null)
+            {
+                yield break;
+            }
+
+            var grid = panel.GetComponent<GridLayoutGroup>()
+                ?? panel.gameObject.AddComponent<GridLayoutGroup>();
+            grid.padding = oldPadding;
+            grid.spacing = new Vector2(oldSpacing, oldSpacing);
+            ConfigureGrid(panel, grid);
+        }
+        finally
+        {
+            PendingPanels.Remove(panelId);
+        }
+    }
+
+    private static RectOffset CopyPadding(RectOffset padding)
+    {
+        return padding == null
+            ? new RectOffset()
+            : new RectOffset(padding.left, padding.right, padding.top, padding.bottom);
+    }
+
+    private static void ConfigureGrid(RectTransform panel, GridLayoutGroup grid)
+    {
         var cell = ItemViewFactory.GetCellPixelSize(new IntVec2(1, 1));
         grid.cellSize = new Vector2(cell.X, cell.Y);
         grid.startCorner = GridLayoutGroup.Corner.UpperLeft;
@@ -84,6 +134,20 @@ internal sealed class ExtraSpecialSlotsLayoutModule : ClientModule
         if (panel.parent is RectTransform parent)
         {
             LayoutRebuilder.ForceRebuildLayoutImmediate(parent);
+        }
+
+        RescaleSlotItems(panel);
+    }
+
+    private static void RescaleSlotItems(RectTransform panel)
+    {
+        foreach (var slotView in panel.GetComponentsInChildren<SlotView>())
+        {
+            var slotPlace = slotView._slotPlace;
+            if (slotPlace != null)
+            {
+                slotView.ScaleItem(slotPlace.rect.size);
+            }
         }
     }
 }

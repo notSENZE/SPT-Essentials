@@ -19,12 +19,14 @@ public sealed class SPTEssentialsPlugin : BaseUnityPlugin
 
     internal static ManualLogSource Log { get; private set; }
     internal static EssentialsConfig Settings { get; private set; }
+    internal static SPTEssentialsPlugin Instance { get; private set; }
 
     private RaidPauseModule _pause;
     private CompactHudController _compactHud;
 
     private void Awake()
     {
+        Instance = this;
         Log = Logger;
         Settings = new EssentialsConfig(Config);
         CompactHudSettings.Bind(Config, Settings.EnableCompactHud);
@@ -57,5 +59,6 @@ public sealed class SPTEssentialsPlugin : BaseUnityPlugin
     {
         _pause?.Shutdown();
         _compactHud?.Dispose();
+        Instance = null;
     }
 }
