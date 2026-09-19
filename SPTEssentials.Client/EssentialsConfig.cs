@@ -7,13 +7,16 @@ internal sealed class EssentialsConfig
 {
     internal ConfigEntry<bool> EnableRaidPause { get; }
     internal ConfigEntry<bool> KeepQuickReloadMagazines { get; }
+    internal ConfigEntry<bool> EnableKeepTripwireKit { get; }
     internal ConfigEntry<bool> EnableFieldArmorRepair { get; }
     internal ConfigEntry<bool> EnableSmartAirFilter { get; }
     internal ConfigEntry<bool> EnableExpandedSpecialSlots { get; }
     internal ConfigEntry<bool> EnableCompatibilityRules { get; }
     internal ConfigEntry<bool> EnableCompactHud { get; }
+    internal ConfigEntry<bool> EnableCustomReticleColor { get; }
 
     internal ConfigEntry<KeyboardShortcut> PauseShortcut { get; }
+    internal ConfigEntry<Color> ReticleColor { get; }
 
     internal EssentialsConfig(ConfigFile config)
     {
@@ -34,6 +37,12 @@ internal sealed class EssentialsConfig
             "Enable Raid Pause",
             true,
             "Allows a solo raid to be paused without consuming raid or world time."
+        );
+        EnableKeepTripwireKit = config.Bind(
+            "01 - Modules",
+            "Enable Keep Tripwire Kit",
+            true,
+            "Returns one Tripwire installation kit after successfully disarming a trap with a multitool. Recovered kits may exceed the normal four-kit raid limit. If no inventory space is available, the kit drops beside the trap. Recovered kits are not Found in Raid."
         );
         EnableSmartAirFilter = config.Bind(
             "01 - Modules",
@@ -59,11 +68,23 @@ internal sealed class EssentialsConfig
             true,
             "Shows health, energy, hydration and ready-to-use grenades in raids and the Hideout."
         );
+        EnableCustomReticleColor = config.Bind(
+            "01 - Modules",
+            "Enable Custom Reticle Color",
+            true,
+            "Applies one global color to supported collimator, hybrid and magnified-scope reticles."
+        );
         PauseShortcut = config.Bind(
             "02 - Controls",
             "Pause Raid",
             new KeyboardShortcut(KeyCode.DownArrow),
             "Pauses or resumes the current solo raid."
+        );
+        ReticleColor = config.Bind(
+            "03 - Reticle",
+            "Reticle Color",
+            Color.red,
+            "Global color for supported illuminated reticles. Changes apply immediately."
         );
     }
 }

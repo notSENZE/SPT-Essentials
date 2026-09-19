@@ -3,9 +3,9 @@
     <TargetFramework>net471</TargetFramework>
     <RootNamespace>SPTEssentials.Client</RootNamespace>
     <AssemblyName>SPTEssentials.Client</AssemblyName>
-    <Version>1.0.1</Version>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
-    <FileVersion>1.0.1.0</FileVersion>
+    <Version>1.1.0</Version>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
     <Authors>Senze</Authors>
     <Company>Senze</Company>
     <Product>SPT Essentials</Product>
@@ -37,6 +37,10 @@
     </Reference>
     <Reference Include="Comfort">
       <HintPath>$(SPTInstallPath)\EscapeFromTarkov_Data\Managed\Comfort.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="DissonanceVoip">
+      <HintPath>$(SPTInstallPath)\EscapeFromTarkov_Data\Managed\DissonanceVoip.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json">
