@@ -22,8 +22,20 @@ internal sealed class CompatibilityRule
     [JsonPropertyName("SLOT_NAMES")]
     public List<string>? SlotNames { get; init; }
 
+    [JsonPropertyName("SLOT_RULES")]
+    public List<CompatibilitySlotRule?>? SlotRules { get; init; }
+
     [JsonPropertyName("REPLACE")]
     public bool Replace { get; init; }
+}
+
+internal sealed class CompatibilitySlotRule
+{
+    [JsonPropertyName("ALLOWED_TPLS")]
+    public List<string> AllowedTpls { get; init; } = [];
+
+    [JsonPropertyName("SLOT_NAMES")]
+    public List<string> SlotNames { get; init; } = [];
 }
 
 internal sealed class CompatibilityReport

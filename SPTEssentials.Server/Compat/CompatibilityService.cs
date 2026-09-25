@@ -83,26 +83,86 @@ public sealed class CompatibilityService(
         var rules = config?.Rules ?? [];
         for (var index = 0; index < rules.Count; index++)
         {
-            if (!TryNormalizeRule(rules[index], out var rule, out var reason))
+            var input = rules[index];
+            if (input?.SlotRules is { Count: > 0 })
+            {
+                ApplySlotRules(input, index, file, report);
+                continue;
+            }
+
+            ApplyRule(input, $"{index + 1}", file, report);
+        }
+    }
+
+    private void ApplySlotRules(
+        CompatibilityRule input,
+        int ruleIndex,
+        string file,
+        CompatibilityReport report)
+    {
+        if ((input.AllowedTpls?.Count ?? 0) > 0
+            || input.GridIndexes is { Count: > 0 }
+            || input.SlotNames is { Count: > 0 })
+        {
+            report.InvalidRules++;
+            logger.Error(
+                $"{ModInfo.LogPrefix} Compatibility skipped rule {ruleIndex + 1} in "
+                + $"'{IOPath.GetFileName(file)}': SLOT_RULES cannot be combined with top-level "
+                + "ALLOWED_TPLS, GRID_INDEXES or SLOT_NAMES.");
+            return;
+        }
+
+        for (var slotRuleIndex = 0; slotRuleIndex < input.SlotRules!.Count; slotRuleIndex++)
+        {
+            var slotRule = input.SlotRules[slotRuleIndex];
+            var label = $"{ruleIndex + 1}.{slotRuleIndex + 1}";
+
+            if (slotRule?.SlotNames is not { Count: > 0 })
             {
                 report.InvalidRules++;
                 logger.Error(
-                    $"{ModInfo.LogPrefix} Compatibility skipped rule {index + 1} in "
-                    + $"'{IOPath.GetFileName(file)}': {reason}");
+                    $"{ModInfo.LogPrefix} Compatibility skipped rule {label} in "
+                    + $"'{IOPath.GetFileName(file)}': SLOT_NAMES has no entries.");
                 continue;
             }
 
-            report.Rules++;
-            CountMissingAllowedTemplates(rule, report);
-
-            if (IsSpecialSlotTarget(rule.TargetTpl))
+            var expandedRule = new CompatibilityRule
             {
-                ApplySpecialSlotRule(rule, report);
-                continue;
-            }
+                TargetTpl = input.TargetTpl,
+                AllowedTpls = slotRule.AllowedTpls,
+                SlotNames = slotRule.SlotNames,
+                Replace = input.Replace
+            };
 
-            ApplyItemRule(rule, report);
+            ApplyRule(expandedRule, label, file, report);
         }
+    }
+
+    private void ApplyRule(
+        CompatibilityRule? input,
+        string ruleLabel,
+        string file,
+        CompatibilityReport report)
+    {
+        if (!TryNormalizeRule(input, out var rule, out var reason))
+        {
+            report.InvalidRules++;
+            logger.Error(
+                $"{ModInfo.LogPrefix} Compatibility skipped rule {ruleLabel} in "
+                + $"'{IOPath.GetFileName(file)}': {reason}");
+            return;
+        }
+
+        report.Rules++;
+        CountMissingAllowedTemplates(rule, report);
+
+        if (IsSpecialSlotTarget(rule.TargetTpl))
+        {
+            ApplySpecialSlotRule(rule, report);
+            return;
+        }
+
+        ApplyItemRule(rule, report);
     }
 
     private void ApplyItemRule(CompatibilityRule rule, CompatibilityReport report)

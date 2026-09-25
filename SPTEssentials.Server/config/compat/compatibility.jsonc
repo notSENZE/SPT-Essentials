@@ -20,7 +20,7 @@
     //   "REPLACE": false
     // },
 
-    // Weapon or attachment example:
+    // Weapon or attachment example with one slot group:
     // {
     //   "TARGET-TPL": "PUT_WEAPON_OR_ATTACHMENT_TPL_HERE",
     //   "ALLOWED_TPLS": [
@@ -28,6 +28,27 @@
     //   ],
     //   "SLOT_NAMES": [
     //     "mod_scope"
+    //   ],
+    //   "REPLACE": false
+    // },
+
+    // Weapon or attachment example with several slot groups.
+    // Use this when different parts belong in different slots on the same target:
+    // {
+    //   "TARGET-TPL": "PUT_WEAPON_OR_ATTACHMENT_TPL_HERE",
+    //   "SLOT_RULES": [
+    //     {
+    //       "SLOT_NAMES": ["mod_stock"],
+    //       "ALLOWED_TPLS": [
+    //         "PUT_ALLOWED_STOCK_TPL_HERE"
+    //       ]
+    //     },
+    //     {
+    //       "SLOT_NAMES": ["mod_gas_block"],
+    //       "ALLOWED_TPLS": [
+    //         "PUT_ALLOWED_GAS_BLOCK_TPL_HERE"
+    //       ]
+    //     }
     //   ],
     //   "REPLACE": false
     // }
