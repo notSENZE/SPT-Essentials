@@ -1,6 +1,13 @@
-## {.tabset}
+# IMPORTANT NOTE
+My mods will no longer be available on The Forge. 
+According to the rules their, you won’t receive support if you’ve installed mods that weren’t published there. You’ll be advised to uninstall these (my) mods or be denied support altogether. 
+If you have any issues with my mods, please contact me directly on Discord.  
 
-### SPT ESSENTIALS
+**Discord Name:** *@obviously.senze*  
+**My Discord server:** https://discord.gg/PD5TPQFKpa
+
+
+# SPT ESSENTIALS
 
 “SPT Essentials” is a type of mod pack that includes many different, modular mods that can be turned on and off in the F12 menu, 
 allowing you to choose which ones should remain active. 
@@ -8,7 +15,7 @@ allowing you to choose which ones should remain active.
 **SPT version:** ~4.1.6
 **Dependencies:** none
 
-### WHAT IS INCLUDED
+# WHAT IS INCLUDED
 
 - **Field Repair** adds the Field Armor Repair Kit. During a raid, drag it onto compatible damaged armor to repair it immediately. Outside raids, the normal repair screen is left alone.
 - **Quickload Mag Saver** tries to place the old magazine in a free rig, pocket or inventory grid during a quick reload. When there is no room, the magazine still drops as usual.
@@ -23,7 +30,7 @@ allowing you to choose which ones should remain active.
 - **Keep tripwire installation kit** gives you the possibilty to disarm a tripwire installation kit without losing it (works only with Leatherman Multitool).
 - **Breacher** makes it possible to open locked doors with a shotgun. 
 
-### INSTALLATION AND SETTINGS
+# INSTALLATION AND SETTINGS
 
 Copy the contents of the release into your main SPT folder and allow Windows to merge the folders.
 
@@ -41,13 +48,13 @@ The file contains commented examples. Add your template IDs, keep `REPLACE` set 
 
 If you previously installed my standalone Compact HUD, remove it before using SPT Essentials. I have included that functionality here, so running both versions would load it twice.
 
-### LICENSE
+# LICENSE
 
 I release my contributions to SPT Essentials under the [MIT License](LICENSE). You may use, modify and redistribute them as long as you keep the applicable copyright and license notices.
 
 Raid Pause and Smart Air Filter include adaptations of separately copyrighted MIT-licensed work. I preserve those original notices in `THIRD-PARTY-NOTICES.md` and the `licenses` folder. The permissions I received from netVnum and Utjan are also recorded there.
 
-### CREDITS
+# CREDITS
 
 I adapted and reimplemented **Raid Pause** for SPT 4.1.5 based on the MIT-licensed [Pause](https://github.com/netvnum/Pause), currently maintained by **netVnum** and originally created by **swaffordm**. My implementation uses the same underlying pause and timer-correction ideas, but I restructured it for SPT Essentials and the current game version. I also received explicit permission from **netVnum** to adapt and include Pause in SPT Essentials.
 
@@ -65,7 +72,7 @@ The module "Custom reticle color" is inspired by Acidphantasms [BrightLasers](ht
 
 > Full credit for the original concept and inspiration goes to [kmyuhkyuk](https://sp-mod.com/user/4974/kmyuhkyuk). Compact HUD is an independent implementation and contains no code or assets from Game Panel HUD. If developer of the original mod resumes wants me to remove the module from the mod, I will do so immediately. 
 
-### AI TRANSPARENCY
+# AI TRANSPARENCY
 
 Just to be completely open about it: I’m not a trained software developer, and I don’t understand every single part of the code yet. I’m learning as I go.
 
@@ -81,6 +88,6 @@ I know that AI-assisted mods are a touchy subject in parts of the community, and
 
 The source code is publicly available, and constructive code reviews, specific suggestions and reproducible bug reports are always welcome.
 
-### SUPPORT ME
+# SUPPORT ME
 
 If you enjoy my work and want to support it, you can find me on [Ko-fi](https://ko-fi.com/not_senze).
