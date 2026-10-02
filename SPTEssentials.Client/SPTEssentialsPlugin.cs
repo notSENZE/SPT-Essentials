@@ -1,6 +1,7 @@
 using BepInEx;
 using BepInEx.Logging;
 using SPTEssentials.Client.AirFilter;
+using SPTEssentials.Client.Breacher;
 using SPTEssentials.Client.CompactHud;
 using SPTEssentials.Client.FieldRepair;
 using SPTEssentials.Client.Pause;
@@ -12,12 +13,12 @@ using SPTEssentials.Client.Tripwire;
 namespace SPTEssentials.Client;
 
 [BepInPlugin(PluginGuid, PluginName, PluginVersion)]
-[BepInDependency("com.SPT.core", "4.1.5")]
+[BepInDependency("com.SPT.core", "4.1.6")]
 public sealed class SPTEssentialsPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "com.senze.sptessentials";
     internal const string PluginName = "Senze-SPTEssentials";
-    internal const string PluginVersion = "1.1.0";
+    internal const string PluginVersion = "1.3.0";
 
     internal static ManualLogSource Log { get; private set; }
     internal static EssentialsConfig Settings { get; private set; }
@@ -26,6 +27,7 @@ public sealed class SPTEssentialsPlugin : BaseUnityPlugin
     private RaidPauseModule _pause;
     private CompactHudController _compactHud;
     private CustomReticleColorModule _reticleColor;
+    private BreacherModule _breacher;
 
     private void Awake()
     {
@@ -37,6 +39,7 @@ public sealed class SPTEssentialsPlugin : BaseUnityPlugin
         _pause = new RaidPauseModule();
         _compactHud = new CompactHudController();
         _reticleColor = new CustomReticleColorModule();
+        _breacher = new BreacherModule();
 
         _pause.EnableSafely();
         new MagazineRetentionModule().EnableSafely();
@@ -45,6 +48,7 @@ public sealed class SPTEssentialsPlugin : BaseUnityPlugin
         new FieldArmorRepairModule().EnableSafely();
         new RaidOnlyAirFilterModule().EnableSafely();
         _reticleColor.EnableSafely();
+        _breacher.EnableSafely();
 
         Log.LogInfo($"{PluginName} {PluginVersion} loaded for SPT 4.1.x.");
     }
@@ -66,6 +70,7 @@ public sealed class SPTEssentialsPlugin : BaseUnityPlugin
         _pause?.Shutdown();
         _compactHud?.Dispose();
         _reticleColor?.Shutdown();
+        _breacher?.Shutdown();
         Instance = null;
     }
 }

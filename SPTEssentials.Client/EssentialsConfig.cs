@@ -14,6 +14,7 @@ internal sealed class EssentialsConfig
     internal ConfigEntry<bool> EnableCompatibilityRules { get; }
     internal ConfigEntry<bool> EnableCompactHud { get; }
     internal ConfigEntry<bool> EnableCustomReticleColor { get; }
+    internal ConfigEntry<bool> EnableBreacher { get; }
 
     internal ConfigEntry<KeyboardShortcut> PauseShortcut { get; }
     internal ConfigEntry<Color> ReticleColor { get; }
@@ -73,6 +74,12 @@ internal sealed class EssentialsConfig
             "Enable Custom Reticle Color",
             true,
             "Applies one global color to supported collimator, hybrid and magnified-scope reticles."
+        );
+        EnableBreacher = config.Bind(
+            "01 - Modules",
+            "Enable Breacher",
+            true,
+            "Allows a regular hinged door to be breached with two shotgun shots."
         );
         PauseShortcut = config.Bind(
             "02 - Controls",
