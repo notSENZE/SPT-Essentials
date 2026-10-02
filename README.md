@@ -4,7 +4,7 @@ According to the rules their, you won’t receive support if you’ve installed 
 If you have any issues with my mods, please contact me directly on Discord.
 
 **Discord Name:** *@obviously.senze*  
-**My Discord server:** https://discord.gg/PD5TPQFKpa  
+**My Discord server:** https://discord.gg/PD5TPQFKpa
 
 
 # SPT ESSENTIALS
@@ -12,7 +12,7 @@ If you have any issues with my mods, please contact me directly on Discord.
 “SPT Essentials” is a type of mod pack that includes many different, modular mods that can be turned on and off in the F12 menu,
 allowing you to choose which ones should remain active.
 
-**SPT version:** ~4.1.6
+**SPT version:** ~4.1.6  
 **Dependencies:** none
 
 # WHAT IS INCLUDED
