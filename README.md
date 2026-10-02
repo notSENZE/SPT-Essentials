@@ -2,39 +2,32 @@
 
 ### SPT ESSENTIALS
 
-I built SPT Essentials as a single modular quality-of-life mod full of small improvements that are hard to give up once you have used them. It combines my own gameplay tweaks with carefully credited adaptations of two open-source mods and an independently made compact status display.
+“SPT Essentials” is a type of mod pack that includes many different, modular mods that can be turned on and off in the F12 menu, 
+allowing you to choose which ones should remain active. 
 
-I made every module optional. You can enable or disable each one in the `F12` configuration menu and keep only the parts that suit your game.
-
-I am preparing **SPT Essentials 1.1.0** for **SPT 4.1.5**. This is a test build; the new module still needs in-game testing before release. Later `4.1.x` versions may work, but I only claim support for versions I have tested.
-
-#### 1.1.0 — in testing
-
-- I added **Keep Tripwire Kit**: a successful multitool disarm leaves one installation kit beside the trap. The grenade still follows the game's normal behavior.
-- I added **Custom Reticle Color**: choose one global color for supported collimator, hybrid and magnified-scope reticles.
-
-#### 1.0.1 hotfix
-
-- I fixed the Special Slots layout error that could interrupt the transit delivery screen.
-- I fixed item icons disappearing from Special Slots after the layout was rebuilt, including when entering the Hideout.
+**SPT version:** ~4.1.6
+**Dependencies:** none
 
 ### WHAT IS INCLUDED
 
 - **Field Repair** adds the Field Armor Repair Kit. During a raid, drag it onto compatible damaged armor to repair it immediately. Outside raids, the normal repair screen is left alone.
 - **Quickload Mag Saver** tries to place the old magazine in a free rig, pocket or inventory grid during a quick reload. When there is no room, the magazine still drops as usual.
-- **Keep Tripwire Kit** leaves one Tripwire installation kit on the ground beside a trap after you successfully disarm it using a multitool. You pick it up normally, so the game's four-kit inventory limit remains in place. Disarming without a multitool, cancelling, explosions and expired traps do not return a kit. Recovered kits are not Found in Raid. I am targeting solo SPT; I have not verified Fika compatibility.
 - **Raid Pause** freezes a solo raid, including the raid timer and time of day. The default key is `Down Arrow`.
 - **Smart Air Filter** makes the Hideout air filter consume resources only while your PMC is in a raid.
 - **Expanded Special Slots** adds three more Special Slots and arranges all six in a compact grid. Active SVM custom pocket layouts are supported.
 - **Compatibility Rules** lets you extend item, container, Special Slot, weapon and attachment filters through one readable JSONC file.
 - **Compact HUD** shows total health, energy, hydration and grenades that are ready in your rig or pockets. It can be moved, scaled and arranged horizontally or vertically.
-- **Custom Reticle Color** gives supported red-dot, reflex, holographic, hybrid and magnified-scope reticles one global color. Pick it in the `F12` menu and the change is applied immediately.
+[![CHUD.png](https://i.postimg.cc/SRffTmss/CHUD.png)](https://postimg.cc/tn767QFQ)  
+- **Custom Reticle Color** makes it possible to change the reticle of _some_ scopes.
+[![Reticle-color.png](https://i.postimg.cc/QtVmL9mk/Reticle-color.png)](https://postimg.cc/2bRhh5PV)
+- **Keep tripwire installation kit** gives you the possibilty to disarm a tripwire installation kit without losing it (works only with Leatherman Multitool).
+- **Breacher** makes it possible to open locked doors with a shotgun. 
 
 ### INSTALLATION AND SETTINGS
 
 Copy the contents of the release into your main SPT folder and allow Windows to merge the folders.
 
-Press `F12` in game to enable or disable individual modules and adjust Raid Pause, Compact HUD or the global reticle color. Compact HUD uses `F10` for edit mode and `F9` to restore its default position.
+Press `F12` in game to enable or disable individual modules and adjust Raid Pause or Compact HUD. Compact HUD uses `F10` for edit mode and `F9` to restore its default position.
 
 Field Repair, Smart Air Filter, Expanded Special Slots and Compatibility Rules also change server-side behavior. Restart both the SPT server and the game after changing one of those switches.
 
@@ -47,17 +40,6 @@ SPT_Runtime/user/mods/SPTEssentials/config/compat/compatibility.jsonc
 The file contains commented examples. Add your template IDs, keep `REPLACE` set to `false` unless you intentionally want to clear an existing filter, then restart SPT.
 
 If you previously installed my standalone Compact HUD, remove it before using SPT Essentials. I have included that functionality here, so running both versions would load it twice.
-
-### SOURCE AND BUILDING
-
-I publish my release source on [GitHub](https://github.com/notSENZE/SPT-Essentials). This local test build has not been published yet.
-
-To build it yourself, point `SPTInstallPath` at a clean SPT 4.1.5 installation and build both projects:
-
-```powershell
-dotnet build .\SPTEssentials.Client\SPTEssentials.Client.csproj -c Release -p:SPTInstallPath="C:\Path\To\SPT"
-dotnet build .\SPTEssentials.Server\SPTEssentials.Server.csproj -c Release -p:SPTInstallPath="C:\Path\To\SPT"
-```
 
 ### LICENSE
 
@@ -73,9 +55,15 @@ I adapted and reimplemented **Smart Air Filter** for SPT 4.1.5 based on the MIT-
 
 I wrote **Compact HUD** independently as a lightweight take on the general HUD concept popularized by [Game Panel HUD](https://github.com/kmyuhkyuk/GamePanelHUD) by **kmyuhkyuk**. I did not copy, modify or distribute any Game Panel HUD code, assets, localization or dependencies.
 
-I wrote **Custom Reticle Color** independently for SPT 4.1.5 after looking at the general user-facing idea behind laser color mods such as [RGBLasers](https://github.com/kiobu/aki-rgblasers) by **kiobu**. I did not copy or adapt code from RGBLasers or Fontaine's Red Dot Tweaker.
-
 I include the applicable MIT notices for Pause and AirFilterQOL in `THIRD-PARTY-NOTICES.md` and the `licenses` folder. Field Repair, Quickload Mag Saver and the remaining SPT Essentials modules are my own implementations.
+
+The module "Custom reticle color" is inspired by Acidphantasms [BrightLasers](https://sp-mod.com/mod/1358/brightlasers).
+
+---
+
+> INFO: I originally made Compact HUD primarily for my own use and never really intended to publish it. However, after seeing how popular [Game Panel HUD](https://sp-mod.com/mod/456/game-panel-hud) by [kmyuhkyuk](https://sp-mod.com/user/4974/kmyuhkyuk) had become, I decided to share my smaller take on the idea. 
+
+> Full credit for the original concept and inspiration goes to [kmyuhkyuk](https://sp-mod.com/user/4974/kmyuhkyuk). Compact HUD is an independent implementation and contains no code or assets from Game Panel HUD. If developer of the original mod resumes wants me to remove the module from the mod, I will do so immediately. 
 
 ### AI TRANSPARENCY
 
