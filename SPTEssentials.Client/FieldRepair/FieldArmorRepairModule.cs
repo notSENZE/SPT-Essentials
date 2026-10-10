@@ -361,6 +361,8 @@ internal sealed class FieldArmorRepairModule : ClientModule
         internal void ApplyRemainingResource()
         {
             RepairKit.RepairKitComponent.Resource = Math.Max(0f, StartingResource - PointsUsed);
+            RepairKit.UpdateAttributes();
+            RepairKit.RaiseRefreshEvent(true, true);
         }
 
     }

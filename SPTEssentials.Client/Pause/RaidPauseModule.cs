@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using Comfort.Common;
@@ -28,22 +29,34 @@ internal sealed class RaidPauseModule : ClientModule
 
     internal void Update()
     {
+        var raidActive = RaidPauseController.IsRaidActive();
         if (!SPTEssentialsPlugin.Settings.EnableRaidPause.Value)
         {
             RaidPauseController.Resume();
             return;
         }
 
-        if (RaidPauseController.IsPaused && !RaidPauseController.IsRaidActive())
+        if (RaidPauseController.IsPaused && !raidActive)
         {
             RaidPauseController.Resume();
             return;
         }
 
-        if (SPTEssentialsPlugin.Settings.PauseShortcut.Value.IsDown())
+        if (IsPauseShortcutDown())
         {
             RaidPauseController.Toggle();
         }
+    }
+
+    private static bool IsPauseShortcutDown()
+    {
+        var shortcut = SPTEssentialsPlugin.Settings.PauseShortcut.Value;
+        if (shortcut.IsDown())
+        {
+            return true;
+        }
+
+        return !shortcut.Modifiers.Any() && Input.GetKeyDown(shortcut.MainKey);
     }
 
     internal void OnGui()

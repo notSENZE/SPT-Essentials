@@ -3,9 +3,9 @@
     <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>SPTEssentials.Server</RootNamespace>
     <AssemblyName>SPTEssentials.Server</AssemblyName>
-    <Version>1.3.0</Version>
-    <AssemblyVersion>1.3.0.0</AssemblyVersion>
-    <FileVersion>1.3.0.0</FileVersion>
+    <Version>1.4.0</Version>
+    <AssemblyVersion>1.4.0.0</AssemblyVersion>
+    <FileVersion>1.4.0.0</FileVersion>
     <Authors>Senze</Authors>
     <Company>Senze</Company>
     <Product>SPT Essentials</Product>
@@ -42,14 +42,23 @@
       <HintPath>$(SPTInstallPath)\SPT_Runtime\SPTarkov.Server.Core.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="WTT-ServerCommonLib">
+      <HintPath>$(SPTInstallPath)\SPT_Runtime\user\mods\WTT-ServerCommonLib\WTT-ServerCommonLib.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
     <None Update="config\**\*" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="db\**\*" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="bundles\**\*" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="bundles.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <Target Name="ValidateSPTServerReferences" BeforeTargets="ResolveReferences">
     <Error Condition="!Exists('$(SPTInstallPath)\SPT_Runtime\0Harmony.dll')"
            Text="SPT server assemblies were not found. Set SPTInstallPath to an SPT 4.1.x installation." />
+    <Error Condition="!Exists('$(SPTInstallPath)\SPT_Runtime\user\mods\WTT-ServerCommonLib\WTT-ServerCommonLib.dll')"
+           Text="WTT-ServerCommonLib 3.x was not found in the selected SPT installation." />
   </Target>
 </Project>

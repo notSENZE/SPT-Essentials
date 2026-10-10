@@ -33,3 +33,11 @@ My implementation retains their core approach of preventing air-filter drain out
 
 I credit Game Panel HUD only as inspiration for Compact HUD.
 I wrote Compact HUD independently and did not copy, modify or distribute Game Panel HUD code, assets, localization, dependencies or other licensed material.
+
+## Sticky Bomb Low-Poly
+
+- Asset: [Sticky Bomb Low-Poly](https://www.cgtrader.com/3d-models/military/other/sticky-bomb-low-poly)
+- Creator: Artistic-Studios
+- Marketplace license: CGTrader Royalty Free License
+
+I purchased this model and use it for the Breaching Charge. The release contains only a compiled Unity AssetBundle. The original FBX, OBJ, Blend, GLB and texture source files are not redistributed.

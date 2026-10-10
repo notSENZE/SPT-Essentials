@@ -1,0 +1,51 @@
+{
+  "6ac93f365b9b86dcfded477e": {
+    "itemTplToClone": "60391b0fb847c71012789415",
+    "newName": "spte_breaching_charge",
+    "parentId": "57864e4c24597754843f8723",
+    "handbookParentId": "5b47574386f77428ca22b2f2",
+    "registerInHandbook": true,
+    "registerInFleaPrices": true,
+    "handbookPriceRoubles": 1251,
+    "fleaPriceRoubles": 350000,
+    "overrideProperties": {
+      "BackgroundColor": "green",
+      "CanRequireOnRagfair": false,
+      "CanSellOnRagfair": true,
+      "ExaminedByDefault": true,
+      "Height": 1,
+      "Prefab": {
+        "path": "spte_breaching_charge.bundle",
+        "rcid": ""
+      },
+      "RarityPvE": "Superrare",
+      "Weight": 0.2,
+      "Width": 2
+    },
+    "locales": {
+      "en": {
+        "name": "Breaching Charge",
+        "shortName": "Breach",
+        "description": "A compact breaching charge with a five-second fuse. Can be attached to doors during a raid."
+      },
+      "de": {
+        "name": "Sprengladung",
+        "shortName": "Breach",
+        "description": "Eine kompakte Sprengladung mit fünf Sekunden Zündzeit. Kann während eines Raids an Türen angebracht werden."
+      }
+    },
+    "addtoBots": false,
+    "addtoTraders": false,
+    "addtoStaticLootContainers": true,
+    "staticLootContainers": [
+      { "containerName": "LOOTCONTAINER_BURIED_BARREL_CACHE", "probability": 5 },
+      { "containerName": "LOOTCONTAINER_BOX_FULL_OF_JUNK", "probability": 5 },
+      { "containerName": "LOOTCONTAINER_GRENADE_BOX", "probability": 5 },
+      { "containerName": "LOOTCONTAINER_GRENADE_BOX_3X2_2", "probability": 5 },
+      { "containerName": "LOOTCONTAINER_TECHNICAL_SUPPLY_CRATE", "probability": 5 },
+      { "containerName": "LOOTCONTAINER_TECHNICAL_SUPPLY_CRATE_5X5_2", "probability": 5 },
+      { "containerName": "LOOTCONTAINER_WOODEN_CRATE", "probability": 5 },
+      { "containerName": "LOOTCONTAINER_WOODEN_CRATE_5X2_2", "probability": 5 }
+    ]
+  }
+}

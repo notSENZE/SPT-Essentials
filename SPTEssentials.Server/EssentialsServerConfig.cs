@@ -15,6 +15,8 @@ public sealed class EssentialsServerConfig
     public bool EnableSmartAirFilter { get; private set; } = true;
     public bool EnableExpandedSpecialSlots { get; private set; } = true;
     public bool EnableCompatibilityRules { get; private set; } = true;
+    public bool EnableBreacher { get; private set; } = true;
+    public bool EnableUpdateCheck { get; private set; } = true;
 
     public EssentialsServerConfig(ISptLogger<EssentialsServerConfig> logger)
     {
@@ -45,6 +47,8 @@ public sealed class EssentialsServerConfig
                 values,
                 "Enable Compatibility Rules",
                 EnableCompatibilityRules);
+            EnableBreacher = Read(values, "Enable Breacher", EnableBreacher);
+            EnableUpdateCheck = Read(values, "Enable Update Check", EnableUpdateCheck);
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {

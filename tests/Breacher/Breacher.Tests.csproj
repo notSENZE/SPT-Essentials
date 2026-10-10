@@ -6,6 +6,8 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../SPTEssentials.Client/Breacher/BreacherDoorRules.cs" Link="BreacherDoorRules.cs" />
     <Compile Include="../../SPTEssentials.Client/Breacher/BreacherShotCounter.cs" Link="BreacherShotCounter.cs" />
+    <Compile Include="../../SPTEssentials.Client/Breacher/ExplosiveBreacherRules.cs" Link="ExplosiveBreacherRules.cs" />
   </ItemGroup>
 </Project>

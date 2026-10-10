@@ -1,0 +1,12 @@
+{
+  "manifest": [
+    {
+      "key": "spte_breaching_charge.bundle",
+      "dependencyKeys": [
+        "assets/commonassets/physics/physicsmaterials.bundle",
+        "shaders",
+        "cubemaps"
+      ]
+    }
+  ]
+}

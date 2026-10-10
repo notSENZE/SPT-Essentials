@@ -5,21 +5,15 @@ namespace SPTEssentials.Client.Breacher;
 
 internal sealed class BreacherShotCounter
 {
-    private readonly int _requiredShots;
     private readonly Dictionary<int, DoorHitState> _doorHits = new Dictionary<int, DoorHitState>();
 
-    internal BreacherShotCounter(int requiredShots)
+    internal bool RegisterShot(int doorId, string weaponId, int fireIndex, int requiredShots)
     {
         if (requiredShots < 1)
         {
             throw new ArgumentOutOfRangeException(nameof(requiredShots));
         }
 
-        _requiredShots = requiredShots;
-    }
-
-    internal bool RegisterShot(int doorId, string weaponId, int fireIndex)
-    {
         if (!_doorHits.TryGetValue(doorId, out var hitState))
         {
             hitState = new DoorHitState();
@@ -32,7 +26,7 @@ internal sealed class BreacherShotCounter
         }
 
         hitState.ShotCount++;
-        if (hitState.ShotCount < _requiredShots)
+        if (hitState.ShotCount < requiredShots)
         {
             return false;
         }

@@ -14,11 +14,12 @@ namespace SPTEssentials.Client;
 
 [BepInPlugin(PluginGuid, PluginName, PluginVersion)]
 [BepInDependency("com.SPT.core", "4.1.6")]
+[BepInDependency("com.wtt.commonlib")]
 public sealed class SPTEssentialsPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "com.senze.sptessentials";
     internal const string PluginName = "Senze-SPTEssentials";
-    internal const string PluginVersion = "1.3.0";
+    internal const string PluginVersion = "1.4.0";
 
     internal static ManualLogSource Log { get; private set; }
     internal static EssentialsConfig Settings { get; private set; }
@@ -28,6 +29,7 @@ public sealed class SPTEssentialsPlugin : BaseUnityPlugin
     private CompactHudController _compactHud;
     private CustomReticleColorModule _reticleColor;
     private BreacherModule _breacher;
+    private BreachingChargeModule _breachingCharge;
 
     private void Awake()
     {
@@ -40,6 +42,7 @@ public sealed class SPTEssentialsPlugin : BaseUnityPlugin
         _compactHud = new CompactHudController();
         _reticleColor = new CustomReticleColorModule();
         _breacher = new BreacherModule();
+        _breachingCharge = new BreachingChargeModule();
 
         _pause.EnableSafely();
         new MagazineRetentionModule().EnableSafely();
@@ -49,6 +52,7 @@ public sealed class SPTEssentialsPlugin : BaseUnityPlugin
         new RaidOnlyAirFilterModule().EnableSafely();
         _reticleColor.EnableSafely();
         _breacher.EnableSafely();
+        _breachingCharge.EnableSafely();
 
         Log.LogInfo($"{PluginName} {PluginVersion} loaded for SPT 4.1.x.");
     }
@@ -57,12 +61,14 @@ public sealed class SPTEssentialsPlugin : BaseUnityPlugin
     {
         _pause?.Update();
         _compactHud?.Tick();
+        _breachingCharge?.Update();
     }
 
     private void OnGUI()
     {
         _pause?.OnGui();
         _compactHud?.Draw();
+        _breachingCharge?.OnGui();
     }
 
     private void OnDestroy()
@@ -71,6 +77,7 @@ public sealed class SPTEssentialsPlugin : BaseUnityPlugin
         _compactHud?.Dispose();
         _reticleColor?.Shutdown();
         _breacher?.Shutdown();
+        _breachingCharge?.Shutdown();
         Instance = null;
     }
 }

@@ -1,0 +1,227 @@
+{
+  "6aca004f8ca7e3feaca39e3f": {
+    "itemTplToClone": "5a7828548dc32e5a9c28b516",
+    "parentId": "5447b6094bdc2dc3278b4567",
+    "handbookParentId": "5b5f794b86f77409407a7f92",
+    "overrideProperties": {
+      "ammoCaliber": "Caliber12g",
+      "BackgroundColor": "green",
+      "CanRequireOnRagfair": false,
+      "CanSellOnRagfair": true,
+      "defAmmo": "6aca068e1d8673d4af3aad02",
+      "defMagType": "5a7882dcc5856700177af662",
+      "Ergonomics": 70,
+      "RarityPvE": "Superrare",
+      "weapClass": "shotgun",
+	  "Weight": 1.1,
+      "Chambers": [
+        {
+          "_name": "patron_in_weapon",
+          "_id": "6aca013b6e0e2dd958b340c0",
+          "_parent": "6aca004f8ca7e3feaca39e3f",
+          "_props": {
+            "filters": [
+              {
+                "Filter": [
+                  "6aca068e1d8673d4af3aad02",
+                  "6aca07cd8b2dc0bac577e0e7"
+                ]
+              }
+            ]
+          },
+          "_required": false,
+          "_mergeSlotWithChildren": false,
+          "_proto": "55d4af244bdc2d962f8b4571"
+        }
+      ],
+      "Slots": [
+        {
+          "_name": "mod_stock",
+          "_id": "6aca0211ecc9a62a017707f3",
+          "_parent": "6aca004f8ca7e3feaca39e3f",
+          "_props": {
+            "filters": [
+              {
+                "Filter": [
+                  "5bfe86a20db834001d23e8f7",
+				  "5bfe86bd0db83400232fe959"
+                ],
+                "Shift": 0
+              }
+            ]
+          },
+          "_required": true,
+          "_mergeSlotWithChildren": false,
+          "_proto": "55d30c4c4bdc2db4468b457e"
+        },
+        {
+          "_name": "mod_magazine",
+          "_id": "6aca021802112cef7135caec",
+          "_parent": "6aca004f8ca7e3feaca39e3f",
+          "_props": {
+            "filters": [
+              {
+                "AnimationIndex": -1,
+                "Filter": [
+                  "5a7882dcc5856700177af662"
+                ]
+              }
+            ]
+          },
+          "_required": false,
+          "_mergeSlotWithChildren": false,
+          "_proto": "55d30c394bdc2dae468b4577"
+        },
+        {
+          "_name": "mod_barrel",
+          "_id": "6aca021c2b444b09a317eb9f",
+          "_parent": "6aca004f8ca7e3feaca39e3f",
+          "_props": {
+            "filters": [
+              {
+                "Filter": [
+                  "5a787fdfc5856700142fdd9a"
+                ],
+                "Shift": 0
+              }
+            ]
+          },
+          "_required": true,
+          "_mergeSlotWithChildren": false,
+          "_proto": "55d30c4c4bdc2db4468b457e"
+        },
+		{
+          "_name": "mod_handguard",
+          "_id": "6aca022215edb5be48307399",
+          "_parent": "6aca004f8ca7e3feaca39e3f",
+          "_props": {
+            "filters": [
+              {
+                "Filter": [
+                  "5a788031c585673f2b5c1c79"
+                ],
+                "Shift": 0
+              }
+            ]
+          },
+          "_required": true,
+          "_mergeSlotWithChildren": false,
+          "_proto": "55d30c4c4bdc2db4468b457e"
+        }
+      ]
+    },
+
+    "locales": {
+      "en": {
+        "name": "Door Breacher Shotgun",
+        "shortName": "DBS",
+        "description": "A special shotgun for breaching doors."
+      }
+    },
+
+    "masteries": true,
+	"masterySections": [
+      {
+        "Level2": 100,
+        "Level3": 200,
+        "Name": "M870",
+        "Templates": [
+          "6aca004f8ca7e3feaca39e3f"
+        ]
+      }
+    ],
+    "fleaPriceRoubles": 50000,
+    "handbookPriceRoubles": 12000,
+    "addtoBots": false,
+	"addtoInventorySlots": [
+      "FirstPrimaryWeapon",
+      "SecondPrimaryWeapon"
+	],
+	"addtoModSlots": false,
+    "addtoStaticLootContainers": true,
+    "addtoTraders": false,
+
+    "addWeaponPreset": true,
+    "weaponPresets": [
+      {
+        "_id": "6aca047a9244e74a8379ff90",
+        "_type": "Preset",
+        "_changeWeaponName": false,
+        "_name": "Door Breacher Shotgun",
+        "_encyclopedia": "6aca004f8ca7e3feaca39e3f",
+        "_parent": "6aca04ebcf5696823047ea67",
+        "_items": [
+          {
+            "_id": "6aca04ebcf5696823047ea67",
+            "_tpl": "6aca004f8ca7e3feaca39e3f",
+            "upd": {
+              "FireMode": {
+                "FireMode": "single"
+              },
+              "Foldable": {
+                "Folded": false
+              }
+            }
+          },
+          {
+            "_id": "6aca0565ba06805450715297",
+            "_tpl": "5a787fdfc5856700142fdd9a",
+            "parentId": "6aca04ebcf5696823047ea67",
+            "slotId": "mod_barrel"
+          },
+          {
+            "_id": "6aca0562f05247d4c07376b8",
+            "_tpl": "5a788031c585673f2b5c1c79",
+            "parentId": "6aca04ebcf5696823047ea67",
+            "slotId": "mod_handguard"
+          },
+          {
+            "_id": "6aca055f8bc0a6b635f68d01",
+            "_tpl": "5a7882dcc5856700177af662",
+            "parentId": "6aca04ebcf5696823047ea67",
+            "slotId": "mod_magazine"
+          },
+          {
+            "_id": "6aca054b564f44fdc09057bf",
+            "_tpl": "5bfe86a20db834001d23e8f7",
+            "parentId": "6aca04ebcf5696823047ea67",
+            "slotId": "mod_stock"
+          },
+          {
+            "_id": "6aca055b3fd6730c0d2a7a09",
+            "_tpl": "5bfe86bd0db83400232fe959",
+            "parentId": "6aca054b564f44fdc09057bf",
+            "slotId": "mod_stock"
+          }
+        ]
+      }
+    ],
+
+    "staticLootContainers": [
+      {
+        "containerName": "LOOTCONTAINER_WEAPON_BOX_4X4",
+        "probability": 30
+      },
+      {
+        "containerName": "LOOTCONTAINER_AIRDROP_WEAPON_CRATE",
+        "probability": 30
+      },
+      {
+        "containerName": "LOOTCONTAINER_LONG_WEAPON_BOX",
+        "probability": 30
+      },
+      {
+        "containerName": "LOOTCONTAINER_WEAPON_BOX_5X2",
+        "probability": 30
+      },
+      {
+        "containerName": "LOOTCONTAINER_WEAPON_BOX_5X5",
+        "probability": 30
+      },
+      {
+        "containerName": "LOOTCONTAINER_WEAPON_BOX_6X3",
+        "probability": 30
+      }
+    ]
+  }
+}

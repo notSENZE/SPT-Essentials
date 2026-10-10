@@ -13,11 +13,13 @@ If you have any issues with my mods, please contact me directly on Discord.
 allowing you to choose which ones should remain active.
 
 **SPT version:** ~4.1.6  
-**Dependencies:** none
+**Dependencies:** [WTT-CommonLib 3.x](https://github.com/ArysWasTaken/WeaponTemplateToolbox)
+**FIKA compatible:** unknown
+**License**: MIT
 
 # WHAT IS INCLUDED
 
-- **Field Repair** adds the Field Armor Repair Kit. During a raid, drag it onto compatible damaged armor to repair it immediately. Outside raids, the normal repair screen is left alone.
+- **Field Repair** adds the Field Armor Repair Kit. During a raid, drag it onto compatible damaged armor to repair it immediately. Its remaining points update on the item as soon as they are used. Outside raids, the normal repair screen is left alone.
 - **Quickload Mag Saver** tries to place the old magazine in a free rig, pocket or inventory grid during a quick reload. When there is no room, the magazine still drops as usual.
 - **Raid Pause** freezes a solo raid, including the raid timer and time of day. The default key is `Down Arrow`.
 - **Smart Air Filter** makes the Hideout air filter consume resources only while your PMC is in a raid.
@@ -28,7 +30,8 @@ allowing you to choose which ones should remain active.
 - **Custom Reticle Color** makes it possible to change the reticle of _some_ scopes.
 [![Reticle-color.png](https://i.postimg.cc/QtVmL9mk/Reticle-color.png)](https://postimg.cc/2bRhh5PV)
 - **Keep tripwire installation kit** gives you the possibilty to disarm a tripwire installation kit without losing it (works only with Leatherman Multitool).
-- **Breacher** lets you blast open a regular hinged door with two shotgun shots. Keycard doors, sliding doors and other special door types are left untouched.
+- **Breacher** lets you shoot open the lock of a hinged door, including metal and barred doors. This requires the Door Breacher Shotgun. Normal locked doors take four hits with either 12/70 door breacher .50 BMG slugs or 12/70 AP-20 superslugs. Marked Rooms take six AP-20 superslugs. The RShG-2 opens a directly hit door with one explosive shot, without requiring a lock hit. The module also adds a Breaching Charge with a five-second fuse. It can be attached to regular, keycard and sliding doors, and removed again by holding `F` for one second while there is room in your inventory. Extraction doors and scripted map gates are deliberately left alone. The charge appears in suitable loot containers and on the Flea Market with a base price of 350,000 roubles.
+- **Update Check** checks my GitHub releases when the server starts and prints a message when a newer SPT Essentials version is available. It can be disabled in the F12 menu.
 
 # INSTALLATION AND SETTINGS
 
@@ -36,7 +39,7 @@ Copy the contents of the release into your main SPT folder and allow Windows to 
 
 Press `F12` in game to enable or disable individual modules and adjust Raid Pause or Compact HUD. Compact HUD uses `F10` for edit mode and `F9` to restore its default position.
 
-Field Repair, Smart Air Filter, Expanded Special Slots and Compatibility Rules also change server-side behavior. Restart both the SPT server and the game after changing one of those switches.
+Field Repair, Smart Air Filter, Expanded Special Slots, Compatibility Rules and Breacher also change server-side behavior. Update Check runs when the server starts. Restart both the SPT server and the game after changing one of those switches.
 
 Compatibility rules live here:
 
@@ -63,6 +66,8 @@ I adapted and reimplemented **Smart Air Filter** for SPT 4.1.5 based on the MIT-
 I wrote **Compact HUD** independently as a lightweight take on the general HUD concept popularized by [Game Panel HUD](https://github.com/kmyuhkyuk/GamePanelHUD) by **kmyuhkyuk**. I did not copy, modify or distribute any Game Panel HUD code, assets, localization or dependencies.
 
 I wrote **Breacher** independently for SPT Essentials. It uses SPT's own hit and door behavior and contains no code from another door-breaching mod.
+
+The Breaching Charge uses a legally purchased [**Sticky Bomb Low-Poly**](https://www.cgtrader.com/3d-models/military/other/sticky-bomb-low-poly) model by **Artistic-Studios** under the CGTrader Royalty Free License. I distribute only the compiled in-game AssetBundle; the seller's original FBX, OBJ, Blend, GLB and texture source files are not included in the repository or release.
 
 I include the applicable MIT notices for Pause and AirFilterQOL in `THIRD-PARTY-NOTICES.md` and the `licenses` folder. Field Repair, Quickload Mag Saver and the remaining SPT Essentials modules are my own implementations.
 

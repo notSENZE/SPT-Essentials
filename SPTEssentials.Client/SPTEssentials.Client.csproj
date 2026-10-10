@@ -3,9 +3,9 @@
     <TargetFramework>net471</TargetFramework>
     <RootNamespace>SPTEssentials.Client</RootNamespace>
     <AssemblyName>SPTEssentials.Client</AssemblyName>
-    <Version>1.3.0</Version>
-    <AssemblyVersion>1.3.0.0</AssemblyVersion>
-    <FileVersion>1.3.0.0</FileVersion>
+    <Version>1.4.0</Version>
+    <AssemblyVersion>1.4.0.0</AssemblyVersion>
+    <FileVersion>1.4.0.0</FileVersion>
     <Authors>Senze</Authors>
     <Company>Senze</Company>
     <Product>SPT Essentials</Product>
@@ -35,6 +35,10 @@
       <HintPath>$(SPTInstallPath)\BepInEx\core\BepInEx.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="WTT-ClientCommonLib">
+      <HintPath>$(SPTInstallPath)\BepInEx\plugins\WTT-ClientCommonLib\WTT-ClientCommonLib.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="Comfort">
       <HintPath>$(SPTInstallPath)\EscapeFromTarkov_Data\Managed\Comfort.dll</HintPath>
       <Private>false</Private>
@@ -57,6 +61,14 @@
     </Reference>
     <Reference Include="UnityEngine">
       <HintPath>$(SPTInstallPath)\EscapeFromTarkov_Data\Managed\UnityEngine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.AssetBundleModule">
+      <HintPath>$(SPTInstallPath)\EscapeFromTarkov_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.AudioModule">
+      <HintPath>$(SPTInstallPath)\EscapeFromTarkov_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
@@ -96,5 +108,7 @@
   <Target Name="ValidateSPTReferences" BeforeTargets="ResolveReferences">
     <Error Condition="!Exists('$(SPTInstallPath)\EscapeFromTarkov_Data\Managed\Assembly-CSharp.dll')"
            Text="SPT client assemblies were not found. Set SPTInstallPath to an SPT 4.1.x installation." />
+    <Error Condition="!Exists('$(SPTInstallPath)\BepInEx\plugins\WTT-ClientCommonLib\WTT-ClientCommonLib.dll')"
+           Text="WTT-ClientCommonLib 3.x was not found in the selected SPT installation." />
   </Target>
 </Project>

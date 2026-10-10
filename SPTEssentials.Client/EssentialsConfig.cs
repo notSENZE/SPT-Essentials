@@ -15,6 +15,7 @@ internal sealed class EssentialsConfig
     internal ConfigEntry<bool> EnableCompactHud { get; }
     internal ConfigEntry<bool> EnableCustomReticleColor { get; }
     internal ConfigEntry<bool> EnableBreacher { get; }
+    internal ConfigEntry<bool> EnableUpdateCheck { get; }
 
     internal ConfigEntry<KeyboardShortcut> PauseShortcut { get; }
     internal ConfigEntry<Color> ReticleColor { get; }
@@ -79,7 +80,13 @@ internal sealed class EssentialsConfig
             "01 - Modules",
             "Enable Breacher",
             true,
-            "Allows a regular hinged door to be breached with two shotgun shots."
+            "Allows locked doors to be breached with the required shotgun slugs or a five-second Breaching Charge. Restart SPT after changing this option."
+        );
+        EnableUpdateCheck = config.Bind(
+            "04 - Updates",
+            "Enable Update Check",
+            true,
+            "Checks GitHub for a newer SPT Essentials release when the SPT server starts. Restart the server after changing this option."
         );
         PauseShortcut = config.Bind(
             "02 - Controls",
