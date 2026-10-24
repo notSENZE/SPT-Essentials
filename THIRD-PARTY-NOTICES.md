@@ -34,6 +34,14 @@ My implementation retains their core approach of preventing air-filter drain out
 I credit Game Panel HUD only as inspiration for Compact HUD.
 I wrote Compact HUD independently and did not copy, modify or distribute Game Panel HUD code, assets, localization, dependencies or other licensed material.
 
+## HarmonyOS Sans
+
+- Font: HarmonyOS Sans Black
+- Copyright: 2021 Huawei Device Co., Ltd.
+- License: HarmonyOS Sans Fonts License Agreement; see `licenses/HarmonyOS-Sans-License.txt`
+
+Compact HUD uses an unmodified copy of HarmonyOS Sans Black. The font is embedded in the Compact HUD AssetBundle and is not distributed as a standalone font package.
+
 ## Sticky Bomb Low-Poly
 
 - Asset: [Sticky Bomb Low-Poly](https://www.cgtrader.com/3d-models/military/other/sticky-bomb-low-poly)

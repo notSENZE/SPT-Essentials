@@ -7,6 +7,10 @@
         "shaders",
         "cubemaps"
       ]
+    },
+    {
+      "key": "spte_compact_hud.bundle",
+      "dependencyKeys": []
     }
   ]
 }

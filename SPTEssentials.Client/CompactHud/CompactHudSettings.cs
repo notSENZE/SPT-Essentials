@@ -31,7 +31,7 @@ namespace SPTEssentials.Client.CompactHud
             Orientation = config.Bind(
                 "03 - Compact HUD",
                 "HUD Orientation",
-                HudOrientation.Horizontal,
+                HudOrientation.Vertical,
                 "Arrange the four HUD elements horizontally or vertically.");
 
             PositionX = config.Bind(
@@ -69,9 +69,9 @@ namespace SPTEssentials.Client.CompactHud
             BackgroundOpacity = config.Bind(
                 "03 - Compact HUD",
                 "HUD Background Opacity",
-                0.86f,
+                0.4f,
                 new ConfigDescription(
-                    "Opacity of the dark card background.",
+                    "Opacity of the light card background.",
                     new AcceptableValueRange<float>(0.25f, 1f)));
 
             EditModeKey = config.Bind(

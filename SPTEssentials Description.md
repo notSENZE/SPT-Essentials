@@ -31,6 +31,7 @@ allowing you to choose which ones should remain active.
 [![Reticle-color.png](https://i.postimg.cc/QtVmL9mk/Reticle-color.png)](https://postimg.cc/2bRhh5PV)
 - **Keep tripwire installation kit** gives you the possibilty to disarm a tripwire installation kit without losing it (works only with Leatherman Multitool).
 - **Breacher** lets you shoot open the lock of a hinged door, including metal and barred doors. This requires the Door Breacher Shotgun. Normal locked doors take four hits with either 12/70 door breacher .50 BMG slugs or 12/70 AP-20 superslugs. Marked Rooms take six AP-20 superslugs. The RShG-2 opens a directly hit door with one explosive shot, without requiring a lock hit. The module also adds a Breaching Charge with a five-second fuse. It can be attached to regular, keycard and sliding doors, and removed again by holding `F` for one second while there is room in your inventory. Extraction doors and scripted map gates are deliberately left alone. The charge appears in suitable loot containers and on the Flea Market with a base price of 350,000 roubles.
+- **Raid-Long Pain Relief** makes the pain-relief effect from Ibuprofen and Morphine last for the full raid. Their consumption, number of uses and original side effects remain unchanged.
 - **Update Check** checks my GitHub releases when the server starts and prints a message when a newer SPT Essentials version is available. It can be disabled in the F12 menu.
 
 # INSTALLATION AND SETTINGS
@@ -39,7 +40,7 @@ Copy the contents of the release into your main SPT folder and allow Windows to 
 
 Press `F12` in game to enable or disable individual modules and adjust Raid Pause or Compact HUD. Compact HUD uses `F10` for edit mode and `F9` to restore its default position.
 
-Field Repair, Smart Air Filter, Expanded Special Slots, Compatibility Rules and Breacher also change server-side behavior. Update Check runs when the server starts. Restart both the SPT server and the game after changing one of those switches.
+Field Repair, Smart Air Filter, Expanded Special Slots, Compatibility Rules, Breacher and Raid-Long Pain Relief also change server-side behavior. Update Check runs when the server starts. Restart both the SPT server and the game after changing one of those switches.
 
 Compatibility rules live here:
 
@@ -64,6 +65,8 @@ I adapted and reimplemented **Raid Pause** for SPT 4.1.5 based on the MIT-licens
 I adapted and reimplemented **Smart Air Filter** for SPT 4.1.5 based on the MIT-licensed [AirFilterQOL](https://github.com/Utjan/AirFilterQOL) and [SPTAirFilterQOLClientMod](https://github.com/Utjan/SPTAirFilterQOLClientMod) by **Utjan**. My implementation follows their core approach of stopping air-filter drain outside a PMC raid and adds its own client-side safeguard. I also received explicit permission from **Utjan** to adapt and include this functionality in SPT Essentials. The AirFilterQOL license names **Jehree** as its copyright holder.
 
 I wrote **Compact HUD** independently as a lightweight take on the general HUD concept popularized by [Game Panel HUD](https://github.com/kmyuhkyuk/GamePanelHUD) by **kmyuhkyuk**. I did not copy, modify or distribute any Game Panel HUD code, assets, localization or dependencies.
+
+Compact HUD uses the unmodified **HarmonyOS Sans Black** font. Copyright 2021 Huawei Device Co., Ltd. It is included under the HarmonyOS Sans Fonts License Agreement, whose full text is provided in `licenses/HarmonyOS-Sans-License.txt`.
 
 I wrote **Breacher** independently for SPT Essentials. It uses SPT's own hit and door behavior and contains no code from another door-breaching mod.
 

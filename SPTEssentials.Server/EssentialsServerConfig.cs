@@ -16,6 +16,7 @@ public sealed class EssentialsServerConfig
     public bool EnableExpandedSpecialSlots { get; private set; } = true;
     public bool EnableCompatibilityRules { get; private set; } = true;
     public bool EnableBreacher { get; private set; } = true;
+    public bool EnableRaidLongPainRelief { get; private set; } = true;
     public bool EnableUpdateCheck { get; private set; } = true;
 
     public EssentialsServerConfig(ISptLogger<EssentialsServerConfig> logger)
@@ -48,6 +49,10 @@ public sealed class EssentialsServerConfig
                 "Enable Compatibility Rules",
                 EnableCompatibilityRules);
             EnableBreacher = Read(values, "Enable Breacher", EnableBreacher);
+            EnableRaidLongPainRelief = Read(
+                values,
+                "Enable Raid-Long Pain Relief",
+                EnableRaidLongPainRelief);
             EnableUpdateCheck = Read(values, "Enable Update Check", EnableUpdateCheck);
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)

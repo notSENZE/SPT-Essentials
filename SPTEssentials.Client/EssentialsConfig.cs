@@ -15,6 +15,7 @@ internal sealed class EssentialsConfig
     internal ConfigEntry<bool> EnableCompactHud { get; }
     internal ConfigEntry<bool> EnableCustomReticleColor { get; }
     internal ConfigEntry<bool> EnableBreacher { get; }
+    internal ConfigEntry<bool> EnableRaidLongPainRelief { get; }
     internal ConfigEntry<bool> EnableUpdateCheck { get; }
 
     internal ConfigEntry<KeyboardShortcut> PauseShortcut { get; }
@@ -81,6 +82,12 @@ internal sealed class EssentialsConfig
             "Enable Breacher",
             true,
             "Allows locked doors to be breached with the required shotgun slugs or a five-second Breaching Charge. Restart SPT after changing this option."
+        );
+        EnableRaidLongPainRelief = config.Bind(
+            "01 - Modules",
+            "Enable Raid-Long Pain Relief",
+            true,
+            "Makes the pain-relief effect from Ibuprofen and Morphine last for the full raid. Restart SPT after changing this option."
         );
         EnableUpdateCheck = config.Bind(
             "04 - Updates",

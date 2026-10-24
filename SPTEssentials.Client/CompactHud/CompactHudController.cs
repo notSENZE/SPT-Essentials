@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using BepInEx.Bootstrap;
 using EFT;
 using EFT.HealthSystem;
 using EFT.InventoryLogic;
@@ -9,11 +11,22 @@ namespace SPTEssentials.Client.CompactHud
 {
     internal sealed class CompactHudController : IDisposable
     {
-        private const float CardWidth = 176f;
-        private const float CardHeight = 54f;
+        private const float CardWidth = 168f;
+        private const float CardHeight = 58f;
         private const float ScreenMargin = 8f;
         private const float StateUpdateInterval = 0.1f;
         private const float WorldSearchInterval = 0.5f;
+        private const float VisualLoadRetryInterval = 3f;
+        private const string WttPluginGuid = "com.wtt.commonlib";
+        private const string BundleName = "spte_compact_hud.bundle";
+        private const string PrefabName = "SPTEssentialsCompactHudResources";
+
+        private static readonly Color ForegroundColor = new Color(49f / 255f, 49f / 255f, 49f / 255f, 1f);
+        private static readonly Color CardBackgroundColor = new Color(211f / 255f, 211f / 255f, 211f / 255f, 1f);
+        private static readonly Color HealthIconColor = new Color(210f / 255f, 0f, 0f, 1f);
+        private static readonly Color EnergyIconColor = new Color(0f, 151f / 255f, 139f / 255f, 1f);
+        private static readonly Color HydrationIconColor = new Color(0f, 96f / 255f, 1f, 1f);
+        private static readonly Color GrenadeIconColor = new Color(0f, 108f / 255f, 30f / 255f, 1f);
 
         private static readonly EBodyPart[] HealthBodyParts =
         {
@@ -31,11 +44,6 @@ namespace SPTEssentials.Client.CompactHud
             EquipmentSlot.TacticalVest,
             EquipmentSlot.Pockets
         };
-
-        private static readonly Color HealthColor = new Color(0.91f, 0.25f, 0.28f, 1f);
-        private static readonly Color EnergyColor = new Color(0.96f, 0.66f, 0.18f, 1f);
-        private static readonly Color HydrationColor = new Color(0.20f, 0.62f, 0.93f, 1f);
-        private static readonly Color GrenadeColor = new Color(0.57f, 0.68f, 0.32f, 1f);
 
         private static readonly Vector2[] EnergyIconPoints =
         {
@@ -82,12 +90,17 @@ namespace SPTEssentials.Client.CompactHud
         private GUIStyle _labelStyle;
         private GUIStyle _valueStyle;
         private GUIStyle _editStyle;
+        private GUIStyle _cardStyle;
         private float _styledScale = -1f;
+        private Font _hudFont;
+        private bool _visualAssetsLoaded;
+        private float _nextVisualLoadAttempt;
 
-        private readonly Texture2D _healthIcon;
-        private readonly Texture2D _energyIcon;
-        private readonly Texture2D _hydrationIcon;
-        private readonly Texture2D _grenadeIcon;
+        private Texture2D _healthIcon;
+        private Texture2D _energyIcon;
+        private Texture2D _hydrationIcon;
+        private Texture2D _grenadeIcon;
+        private readonly Texture2D _cardBackgroundTexture;
 
         internal CompactHudController()
         {
@@ -96,6 +109,7 @@ namespace SPTEssentials.Client.CompactHud
             _energyIcon = CreateIconTexture("CompactHUD Energy", IsInsideEnergyIcon);
             _hydrationIcon = CreateIconTexture("CompactHUD Hydration", IsInsideHydrationIcon);
             _grenadeIcon = CreateIconTexture("CompactHUD Grenade", IsInsideGrenadeIcon);
+            _cardBackgroundTexture = CreateRoundedRectangleTexture("CompactHUD Card Background");
         }
 
         internal void Tick()
@@ -139,6 +153,8 @@ namespace SPTEssentials.Client.CompactHud
                 return;
             }
 
+            TryLoadVisualAssets();
+
             float scale = CompactHudSettings.Scale.Value;
             float gap = CompactHudSettings.Gap.Value * scale;
             Vector2 layoutSize = GetLayoutSize(scale, gap);
@@ -163,19 +179,19 @@ namespace SPTEssentials.Client.CompactHud
                 Rect cardRect = GetCardRect(index, scale, gap);
                 if (index == 0)
                 {
-                    DrawCard(cardRect, _healthIcon, "HEALTH", FormatHealth(), HealthColor, scale);
+                    DrawCard(cardRect, _healthIcon, "HEALTH", FormatHealth(), HealthIconColor, scale);
                 }
                 else if (index == 1)
                 {
-                    DrawCard(cardRect, _energyIcon, "ENERGY", FormatValue(_energy), EnergyColor, scale);
+                    DrawCard(cardRect, _energyIcon, "ENERGY", FormatValue(_energy), EnergyIconColor, scale);
                 }
                 else if (index == 2)
                 {
-                    DrawCard(cardRect, _hydrationIcon, "HYDRATION", FormatValue(_hydration), HydrationColor, scale);
+                    DrawCard(cardRect, _hydrationIcon, "HYDRATION", FormatValue(_hydration), HydrationIconColor, scale);
                 }
                 else
                 {
-                    DrawCard(cardRect, _grenadeIcon, "GRENADES", _grenades.ToString(), GrenadeColor, scale);
+                    DrawCard(cardRect, _grenadeIcon, "GRENADES", _grenades.ToString(), GrenadeIconColor, scale);
                 }
             }
 
@@ -195,6 +211,7 @@ namespace SPTEssentials.Client.CompactHud
             UnityEngine.Object.Destroy(_energyIcon);
             UnityEngine.Object.Destroy(_hydrationIcon);
             UnityEngine.Object.Destroy(_grenadeIcon);
+            UnityEngine.Object.Destroy(_cardBackgroundTexture);
         }
 
         private void UpdateSnapshot(float currentTime)
@@ -329,38 +346,38 @@ namespace SPTEssentials.Client.CompactHud
                 Mathf.Clamp(position.y, ScreenMargin, maximumY));
         }
 
-        private void DrawCard(Rect rect, Texture2D icon, string label, string value, Color accent, float scale)
+        private void DrawCard(Rect rect, Texture2D icon, string label, string value, Color iconColor, float scale)
         {
             float opacity = CompactHudSettings.BackgroundOpacity.Value;
-            DrawRectangle(rect, new Color(0.035f, 0.042f, 0.052f, opacity));
-            DrawRectangle(new Rect(rect.x, rect.y, 4f * scale, rect.height), accent);
+            Color previousColor = GUI.color;
+            GUI.color = new Color(CardBackgroundColor.r, CardBackgroundColor.g, CardBackgroundColor.b, opacity);
+            GUI.Box(rect, GUIContent.none, _cardStyle);
 
-            float iconSize = 34f * scale;
+            float iconSize = 42f * scale;
             Rect iconRect = new Rect(
-                rect.x + 12f * scale,
+                rect.x + 10f * scale,
                 rect.y + (rect.height - iconSize) * 0.5f,
                 iconSize,
                 iconSize);
-            DrawRectangle(iconRect, new Color(accent.r, accent.g, accent.b, 0.18f * opacity));
+            float shadowOffset = 2f * scale;
+            Rect shadowRect = new Rect(iconRect.x, iconRect.y + shadowOffset, iconRect.width, iconRect.height);
+            GUI.color = new Color(0f, 0f, 0f, 0.4f);
+            GUI.DrawTexture(shadowRect, icon, ScaleMode.ScaleToFit, true);
 
-            float pictogramSize = 23f * scale;
-            Rect pictogramRect = new Rect(
-                iconRect.center.x - pictogramSize * 0.5f,
-                iconRect.center.y - pictogramSize * 0.5f,
-                pictogramSize,
-                pictogramSize);
-            GUI.DrawTexture(pictogramRect, icon, ScaleMode.ScaleToFit, true);
+            GUI.color = iconColor;
+            GUI.DrawTexture(iconRect, icon, ScaleMode.ScaleToFit, true);
 
-            float textX = iconRect.xMax + 10f * scale;
-            float textWidth = rect.xMax - textX - 11f * scale;
+            float textX = rect.x + 58f * scale;
+            float textWidth = rect.xMax - textX - 8f * scale;
             GUI.Label(
-                new Rect(textX, rect.y + 6f * scale, textWidth, 17f * scale),
+                new Rect(textX, rect.y + 4f * scale, textWidth, 18f * scale),
                 label,
                 _labelStyle);
             GUI.Label(
-                new Rect(textX, rect.y + 20f * scale, textWidth, 28f * scale),
+                new Rect(textX, rect.y + 20f * scale, textWidth, 30f * scale),
                 value,
                 _valueStyle);
+            GUI.color = previousColor;
         }
 
         private void DrawEditFrame(Rect layoutRect, float scale)
@@ -389,19 +406,26 @@ namespace SPTEssentials.Client.CompactHud
             }
 
             _styledScale = scale;
+            _cardStyle = new GUIStyle(GUI.skin.box)
+            {
+                border = new RectOffset(8, 8, 8, 8),
+                normal = { background = _cardBackgroundTexture }
+            };
             _labelStyle = new GUIStyle(GUI.skin.label)
             {
-                alignment = TextAnchor.MiddleLeft,
-                fontSize = Mathf.RoundToInt(10f * scale),
+                alignment = TextAnchor.MiddleCenter,
+                font = _hudFont,
+                fontSize = Mathf.RoundToInt(12f * scale),
                 fontStyle = FontStyle.Normal,
-                normal = { textColor = new Color(0.70f, 0.74f, 0.78f, 1f) }
+                normal = { textColor = ForegroundColor }
             };
             _valueStyle = new GUIStyle(GUI.skin.label)
             {
-                alignment = TextAnchor.MiddleLeft,
-                fontSize = Mathf.RoundToInt(18f * scale),
-                fontStyle = FontStyle.Bold,
-                normal = { textColor = Color.white }
+                alignment = TextAnchor.MiddleCenter,
+                font = _hudFont,
+                fontSize = Mathf.RoundToInt(19f * scale),
+                fontStyle = FontStyle.Normal,
+                normal = { textColor = ForegroundColor }
             };
             _editStyle = new GUIStyle(GUI.skin.label)
             {
@@ -410,6 +434,94 @@ namespace SPTEssentials.Client.CompactHud
                 fontStyle = FontStyle.Bold,
                 normal = { textColor = new Color(0.30f, 0.82f, 1f, 1f) }
             };
+        }
+
+        private void TryLoadVisualAssets()
+        {
+            if (_visualAssetsLoaded || Time.unscaledTime < _nextVisualLoadAttempt)
+            {
+                return;
+            }
+
+            _nextVisualLoadAttempt = Time.unscaledTime + VisualLoadRetryInterval;
+            if (!Chainloader.PluginInfos.TryGetValue(WttPluginGuid, out var pluginInfo)
+                || pluginInfo.Instance is not WTTClientCommonLib.WTTClientCommonLib commonLib
+                || commonLib.AssetLoader == null)
+            {
+                return;
+            }
+
+            commonLib.AssetLoader.LoadPrefabFromBundle(BundleName, PrefabName);
+
+            foreach (AssetBundle loadedBundle in AssetBundle.GetAllLoadedAssetBundles())
+            {
+                string[] assetNames = loadedBundle.GetAllAssetNames();
+                string fontPath = FindAssetPath(assetNames, "/harmonyos_sans_black.ttf");
+                string healthPath = FindAssetPath(assetNames, "/health.png");
+                string energyPath = FindAssetPath(assetNames, "/energy.png");
+                string hydrationPath = FindAssetPath(assetNames, "/hydration.png");
+                string grenadePath = FindAssetPath(assetNames, "/grenades.png");
+                if (fontPath == null || healthPath == null || energyPath == null || hydrationPath == null || grenadePath == null)
+                {
+                    continue;
+                }
+
+                Font loadedFont = loadedBundle.LoadAsset<Font>(fontPath);
+                Texture2D healthSource = loadedBundle.LoadAsset<Texture2D>(healthPath);
+                Texture2D energySource = loadedBundle.LoadAsset<Texture2D>(energyPath);
+                Texture2D hydrationSource = loadedBundle.LoadAsset<Texture2D>(hydrationPath);
+                Texture2D grenadeSource = loadedBundle.LoadAsset<Texture2D>(grenadePath);
+                if (loadedFont == null || healthSource == null || energySource == null || hydrationSource == null || grenadeSource == null)
+                {
+                    continue;
+                }
+
+                Texture2D healthIcon = CreateAlphaMaskCopy(healthSource, "CompactHUD Health");
+                Texture2D energyIcon = CreateAlphaMaskCopy(energySource, "CompactHUD Energy");
+                Texture2D hydrationIcon = CreateAlphaMaskCopy(hydrationSource, "CompactHUD Hydration");
+                Texture2D grenadeIcon = CreateAlphaMaskCopy(grenadeSource, "CompactHUD Grenade");
+
+                UnityEngine.Object.Destroy(_healthIcon);
+                UnityEngine.Object.Destroy(_energyIcon);
+                UnityEngine.Object.Destroy(_hydrationIcon);
+                UnityEngine.Object.Destroy(_grenadeIcon);
+
+                _healthIcon = healthIcon;
+                _energyIcon = energyIcon;
+                _hydrationIcon = hydrationIcon;
+                _grenadeIcon = grenadeIcon;
+                _hudFont = loadedFont;
+                _visualAssetsLoaded = true;
+                _labelStyle = null;
+                _valueStyle = null;
+                _styledScale = -1f;
+                return;
+            }
+        }
+
+        private static string FindAssetPath(string[] assetNames, string suffix)
+        {
+            return assetNames.FirstOrDefault(path => path.EndsWith(suffix, StringComparison.OrdinalIgnoreCase));
+        }
+
+        private static Texture2D CreateAlphaMaskCopy(Texture2D source, string name)
+        {
+            Color32[] pixels = source.GetPixels32();
+            for (int index = 0; index < pixels.Length; index++)
+            {
+                pixels[index] = new Color32(255, 255, 255, pixels[index].a);
+            }
+
+            Texture2D texture = new Texture2D(source.width, source.height, TextureFormat.RGBA32, false)
+            {
+                name = name,
+                filterMode = FilterMode.Bilinear,
+                wrapMode = TextureWrapMode.Clamp,
+                hideFlags = HideFlags.HideAndDontSave
+            };
+            texture.SetPixels32(pixels);
+            texture.Apply(false, true);
+            return texture;
         }
 
         private void SetEditMode(bool enabled)
@@ -488,6 +600,48 @@ namespace SPTEssentials.Client.CompactHud
                             float normalizedX = (x + (sampleX + 0.5f) / samplesPerAxis) / textureSize;
                             float normalizedY = (y + (sampleY + 0.5f) / samplesPerAxis) / textureSize;
                             if (isInside(normalizedX, normalizedY))
+                            {
+                                coveredSamples++;
+                            }
+                        }
+                    }
+
+                    float alpha = coveredSamples / (float)(samplesPerAxis * samplesPerAxis);
+                    pixels[y * textureSize + x] = new Color(1f, 1f, 1f, alpha);
+                }
+            }
+
+            Texture2D texture = new Texture2D(textureSize, textureSize, TextureFormat.RGBA32, false)
+            {
+                name = name,
+                filterMode = FilterMode.Bilinear,
+                wrapMode = TextureWrapMode.Clamp,
+                hideFlags = HideFlags.HideAndDontSave
+            };
+            texture.SetPixels(pixels);
+            texture.Apply(false, true);
+            return texture;
+        }
+
+        private static Texture2D CreateRoundedRectangleTexture(string name)
+        {
+            const int textureSize = 32;
+            const int samplesPerAxis = 4;
+            const float cornerRadius = 0.20f;
+            Color[] pixels = new Color[textureSize * textureSize];
+
+            for (int y = 0; y < textureSize; y++)
+            {
+                for (int x = 0; x < textureSize; x++)
+                {
+                    int coveredSamples = 0;
+                    for (int sampleY = 0; sampleY < samplesPerAxis; sampleY++)
+                    {
+                        for (int sampleX = 0; sampleX < samplesPerAxis; sampleX++)
+                        {
+                            float normalizedX = (x + (sampleX + 0.5f) / samplesPerAxis) / textureSize;
+                            float normalizedY = (y + (sampleY + 0.5f) / samplesPerAxis) / textureSize;
+                            if (IsInsideRoundedRectangle(normalizedX, normalizedY, 0f, 0f, 1f, 1f, cornerRadius))
                             {
                                 coveredSamples++;
                             }
