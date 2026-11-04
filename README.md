@@ -1,114 +1,96 @@
-# IMPORTANT NOTE
+# ⚠️ IMPORTANT NOTE ⚠️
 My mods will no longer be available on The Forge.
-According to their rules, you won’t receive support if you’ve installed mods that weren’t published there. You’ll be advised to uninstall these (my) mods or be denied support altogether.
-If you have any issues with my mods, please contact me directly on Discord.
+Under The Forge's rules, mods that aren't released there aren't supported.
+This means that if you run into an issue that might be related to one of my mods, you may be denied support or advised to remove the mod.
+If you experience any issues with my mods, please join my [Discord](https://discord.gg/PD5TPQFKpa) for support.
 
-**Discord Name:** *@obviously.senze*  
-**My Discord server:** https://discord.gg/PD5TPQFKpa
+# ABOUT SPT ESSENTIALS
+SPT Essentials is a kind of QoL modpack that introduces many small improvements and changes to the game to enhance your gaming experience.
+All of the following modules can be turned on and off by pressing “F12.”
 
+**SPT version:** `~4.1.6`  
+**Dependencies:** [WTT - CommonLib](https://sp-mod.com/mod/2310/wtt-commonlib)  
+**FIKA compatibility:** Unknown  
+**Recommendations:** -  
+**Known incompatibilities:** -  
 
-# SPT ESSENTIALS
+# DETAILS
+**FIELD REPAIR KIT**  
+A small body armor repair kit that you can use during a raid to repair your ballistic plates.
 
-“SPT Essentials” is a type of mod pack that includes many different, modular mods that can be turned on and off in the F12 menu,
-allowing you to choose which ones should remain active.
+**QUICKLOAD MAG SAVER**  
+Are you tired of having to rely on Quickload during combat just to end up searching for your magazine afterward?
+Quickload ensures that you can change magazines quickly and that it ends up in your inventory afterward.
 
-**SPT version:** ~4.1.6
+**RAID PAUSE**  
+You're in the middle of a battle and suddenly need to take a dump?
+No more shitty buckets next to your gaming chair!
+Press “arrow down” to pause your raid and take a dump like a normal person.
 
-**Dependencies:** [WTT-CommonLib 3.x](https://github.com/ArysWasTaken/WeaponTemplateToolbox)
+**SMART AIR FILTER**  
+Air filters only consume resources when you're in a raid. 
 
-**Optional compatibility:** Continuous Load Ammo 1.2.x and NVG Sight Dimmer 2.1.x
+**EXPANDED SPECIAL SLOTS**  
+Do you need more special slots? Here are some more special slots.
 
-**FIKA compatible:** unknown
-**License**: MIT
+**COMPACT HUD**  
+A small HUD that constantly displays your health, energy, hydration, and grenades.
 
-# WHAT IS INCLUDED
+**CUSTOM RETICLE COLOR**  
+Give your reticle a new color. You can also adjust how light or dark you want it to be.
 
-- **Field Repair** adds the Field Armor Repair Kit. During a raid, drag it onto compatible damaged armor to repair it immediately. Its remaining points update on the item as soon as they are used. Outside raids, the normal repair screen is left alone.
-- **Quickload Mag Saver** tries to place the old magazine in a free rig, pocket or inventory grid during a quick reload. When there is no room, the magazine still drops as usual.
-- **Raid Pause** freezes a solo raid, including the raid timer and time of day. The default key is `Down Arrow`.
-- **Smart Air Filter** makes the Hideout air filter consume resources only while your PMC is in a raid.
-- **Expanded Special Slots** adds three more Special Slots and arranges all six in a compact grid. Active SVM custom pocket layouts are supported.
-- **Compatibility Rules** lets you extend item, container, Special Slot, weapon and attachment filters through one readable JSONC file.
-- **Compact HUD** shows total health, energy, hydration and grenades that are ready in your rig or pockets. It can be moved, scaled and arranged horizontally or vertically.
-[![CHUD.png](https://i.postimg.cc/SRffTmss/CHUD.png)](https://postimg.cc/tn767QFQ)
-- **Custom Reticle Color** makes it possible to change the color and intensity of the reticle on _some_ scopes. Both settings update live, so a reticle can be brightened when snow or strong daylight makes it difficult to see.
-[![Reticle-color.png](https://i.postimg.cc/QtVmL9mk/Reticle-color.png)](https://postimg.cc/2bRhh5PV)
-- **Keep tripwire installation kit** gives you the possibilty to disarm a tripwire installation kit without losing it (works only with Leatherman Multitool).
-- **Breacher** lets you shoot open the lock of a hinged door, including metal and barred doors. This requires the Door Breacher Shotgun. Normal locked doors take four hits with either 12/70 door breacher .50 BMG slugs or 12/70 AP-20 superslugs. Marked Rooms take six AP-20 superslugs. The RShG-2 opens a directly hit door with one explosive shot, without requiring a lock hit. The module also adds a Breaching Charge with a five-second fuse. It can be attached to regular, keycard and sliding doors, and removed again by holding `F` for one second while there is room in your inventory. Extraction doors and scripted map gates are deliberately left alone. The charge appears in suitable loot containers and on the Flea Market with a base price of 350,000 roubles.
-- **Raid-Long Pain Relief** makes the pain-relief effect from Ibuprofen and Morphine last for the full raid. Their consumption, number of uses and original side effects remain unchanged.
-- **Sprint While Healing** lets you sprint while using normal medical items. Surgery remains restricted, including CMS and Surv12, and ordinary sprint limitations such as damaged legs still apply.
-- **Sprint While Packing Magazines** removes the sprint and movement-speed restrictions from Continuous Load Ammo while that mod is filling a magazine outside the inventory. Continuous Load Ammo remains responsible for the actual loading process and is not required for the rest of SPT Essentials.
-- **Raid Moddable** lets you install or remove tool-moddable attachments and handguards during a raid while carrying a Leatherman Multitool. Normal weapon, slot and attachment compatibility rules still apply. Removing a vital part can leave the weapon unusable until it is assembled again.
-- **Update Check** checks my GitHub releases when the server starts and prints a message when a newer SPT Essentials version is available. It can be disabled in the F12 menu.
+**Keep tripwire installation kit**  
+You set a tripwire trap, but no one walks into it? Take it down and bring it back with you.
+You can also disarm Partizan's traps and take them with you.
+You'll need the Leatherman multitool for both.
 
-# INSTALLATION AND SETTINGS
+**BREACHER**  
+This requires the Door Breacher Shotgun.  
+Normal locked doors take four hits with either 12/70 door breacher .50 BMG slugs or 12/70 AP-20 superslugs.  
+Marked Rooms take six AP-20 superslugs. The RShG-2 opens a directly hit door with one explosive shot, without requiring a lock hit.  
+The module also adds a Breaching Charge with a five-second fuse.  
+It can be attached to regular, keycard and sliding doors, and removed again by holding F for one second while there is room in your inventory.  
+Extraction doors and scripted map gates are deliberately left alone.  
+The charge appears in suitable loot containers and on the Flea Market with a base price of 350,000 roubles.
 
-Copy the contents of the release into your main SPT folder and allow Windows to merge the folders.
+**RAID-LONG PAIN RELIEF**  
+Morphine or ibuprofen only last a few minutes? Bullshit. Now it lasts the whole raid.
 
-Press `F12` in game to enable or disable individual modules and adjust Raid Pause or Compact HUD. Compact HUD uses `F10` for edit mode and `F9` to restore its default position.
+**SPRINT WHILE HEALING/PACKING MAGS**  
+You're the GOAT.  
+Sure, you can run while healing yourself or reloading your magazines.  
+But you can't have surgery and run at the same time. You're not *THE* GOAT.
 
-Reticle color and intensity can also be changed in the F12 menu and update immediately. Sprint While Packing Magazines only does anything when Continuous Load Ammo is installed; it does not replace that mod.
+**RAID MODDABLE**  
+Of course, with a Leatherman multitool, you can take your entire weapon - and I mean the entire weapon - apart right in the middle of a raid.
 
-Field Repair, Smart Air Filter, Expanded Special Slots, Compatibility Rules, Breacher and Raid-Long Pain Relief also change server-side behavior. Update Check runs when the server starts. Restart both the SPT server and the game after changing one of those switches.
+**COMPAT RULES**  
+Okay! This is a bit more complicated and only for advanced users.  
+Under `SPT_Runtime\user\mods\SENZE - SPT Essentials.Server\config\compat`, there is a `compatibility.jsonc` file.  
+Here’s what you can do:
 
-Compatibility rules live here:
+Let’s say you have an AK-12, which by default only has a single dust cover.  
+Using `COMPAT RULES`, you just need to find the item’s Tpl and can, for example, make other AK dust covers available for the AK-12.  
 
-```text
-SPT_Runtime/user/mods/SENZE - SPT Essentials.Server/config/compat/compatibility.jsonc
-```
+You can combine dozens of items with each other. 
 
-The file contains commented examples. Add your template IDs, keep `REPLACE` set to `false` unless you intentionally want to clear an existing filter, then restart SPT.
-
-If you previously installed my standalone Compact HUD, remove it before using SPT Essentials. I have included that functionality here, so running both versions would load it twice.
-
-# LICENSE
-
-I release my contributions to SPT Essentials under the [MIT License](LICENSE). You may use, modify and redistribute them as long as you keep the applicable copyright and license notices.
-
-Raid Pause and Smart Air Filter include adaptations of separately copyrighted MIT-licensed work. I preserve those original notices in `THIRD-PARTY-NOTICES.md` and the `licenses` folder. The permissions I received from netVnum and Utjan are also recorded there.
 
 # CREDITS
+I adapted and reimplemented **Raid Pause** based on the MIT-licensed [Pause](https://github.com/netvnum/Pause), currently maintained by **netVnum** and originally created by **swaffordm**.  
+My implementation uses the same underlying pause and timer-correction ideas, but I restructured it for SPT Essentials and the current game version.  
+I also received explicit permission from **netVnum** to adapt and include Pause in SPT Essentials.
 
-I adapted and reimplemented **Raid Pause** for SPT 4.1.5 based on the MIT-licensed [Pause](https://github.com/netvnum/Pause), currently maintained by **netVnum** and originally created by **swaffordm**. My implementation uses the same underlying pause and timer-correction ideas, but I restructured it for SPT Essentials and the current game version. I also received explicit permission from **netVnum** to adapt and include Pause in SPT Essentials.
+I adapted and reimplemented **Smart Air Filter** based on the MIT-licensed [AirFilterQOL](https://github.com/Utjan/AirFilterQOL) and [SPTAirFilterQOLClientMod](https://github.com/Utjan/SPTAirFilterQOLClientMod) by **Utjan**.  
+My implementation follows their core approach of stopping air-filter drain outside a PMC raid and adds its own client-side safeguard.  
+I also received explicit permission from **Utjan** to adapt and include this functionality in SPT Essentials.  
+The AirFilterQOL license names **Jehree** as its copyright holder.
 
-I adapted and reimplemented **Smart Air Filter** for SPT 4.1.5 based on the MIT-licensed [AirFilterQOL](https://github.com/Utjan/AirFilterQOL) and [SPTAirFilterQOLClientMod](https://github.com/Utjan/SPTAirFilterQOLClientMod) by **Utjan**. My implementation follows their core approach of stopping air-filter drain outside a PMC raid and adds its own client-side safeguard. I also received explicit permission from **Utjan** to adapt and include this functionality in SPT Essentials. The AirFilterQOL license names **Jehree** as its copyright holder.
+# BUG REPORTS
+If you encounter a bug or experience any issues with my mods, please include the following information in your report:
 
-I wrote **Compact HUD** independently as a lightweight take on the general HUD concept popularized by [Game Panel HUD](https://github.com/kmyuhkyuk/GamePanelHUD) by **kmyuhkyuk**. I did not copy, modify or distribute any Game Panel HUD code, assets, localization or dependencies.
+- **Description:** What happened, and what were you doing when the issue occurred?
+- **BepInEx logs**
+- **Server logs**
+- **Screenshots or video recordings**, if available
 
-Compact HUD uses the unmodified **HarmonyOS Sans Black** font. Copyright 2021 Huawei Device Co., Ltd. It is included under the HarmonyOS Sans Fonts License Agreement, whose full text is provided in `licenses/HarmonyOS-Sans-License.txt`.
-
-I wrote **Breacher** independently for SPT Essentials. It uses SPT's own hit and door behavior and contains no code from another door-breaching mod.
-
-**Sprint While Packing Magazines** is an independently written compatibility patch. It contains no Continuous Load Ammo code and only prevents that mod from applying its sprint and movement-speed restrictions when it is detected.
-
-The Breaching Charge uses a legally purchased [**Sticky Bomb Low-Poly**](https://www.cgtrader.com/3d-models/military/other/sticky-bomb-low-poly) model by **Artistic-Studios** under the CGTrader Royalty Free License. I distribute only the compiled in-game AssetBundle; the seller's original FBX, OBJ, Blend, GLB and texture source files are not included in the repository or release.
-
-I include the applicable MIT notices for Pause and AirFilterQOL in `THIRD-PARTY-NOTICES.md` and the `licenses` folder. Field Repair, Quickload Mag Saver and the remaining SPT Essentials modules are my own implementations.
-
-The module "Custom reticle color" is inspired by Acidphantasms [BrightLasers](https://sp-mod.com/mod/1358/brightlasers).
-
----
-
-> INFO: I originally made Compact HUD primarily for my own use and never really intended to publish it. However, after seeing how popular [Game Panel HUD](https://sp-mod.com/mod/456/game-panel-hud) by [kmyuhkyuk](https://sp-mod.com/user/4974/kmyuhkyuk) had become, I decided to share my smaller take on the idea.
-
-> Full credit for the original concept and inspiration goes to [kmyuhkyuk](https://sp-mod.com/user/4974/kmyuhkyuk). Compact HUD is an independent implementation and contains no code or assets from Game Panel HUD. If developer of the original mod resumes wants me to remove the module from the mod, I will do so immediately.
-
-# AI TRANSPARENCY
-
-Just to be completely open about it: I’m not a trained software developer, and I don’t understand every single part of the code yet. I’m learning as I go.
-
-A large part of the code was implemented with the help of Codex. It also helps me find the right classes and APIs, read telemetry logs, track down bugs and work on the documentation.
-
-The idea behind the mod, its features, balancing, design decisions and the final say on what gets released all come from me. I don’t simply take generated code and throw it into a release.
-
-New features are tested in-game, checked through logs and, whenever something is unclear, compared against the public SPT source code. If something cannot be properly verified or tested, it gets put aside for later.
-
-That doesn’t mean mistakes can’t happen, especially while I’m still learning. At the end of the day, though, I’m responsible for the mod I publish and for the decisions made along the way, not the tool I used to help build it.
-
-I know that AI-assisted mods are a touchy subject in parts of the community, and I understand why. That’s exactly why I want to be honest about how AI was used here.
-
-The source code is publicly available, and constructive code reviews, specific suggestions and reproducible bug reports are always welcome.
-
-# SUPPORT ME
-
-If you enjoy my work and want to support it, you can find me on [Ko-fi](https://ko-fi.com/not_senze).
+Please submit your bug reports in the dedicated channel [on my Discord server](https://discord.com/channels/1551226098354753576/1552431523658203307).
