@@ -21,7 +21,6 @@ namespace BepInEx.Configuration
         }
     }
 }
-
 namespace HarmonyLib
 {
     using System.Reflection;
@@ -29,7 +28,13 @@ namespace HarmonyLib
     public sealed class Harmony
     {
         public Harmony(string id) { }
+        public void Patch(MethodBase original, HarmonyMethod prefix = null, HarmonyMethod postfix = null) { }
         public void UnpatchSelf() { }
+    }
+
+    public sealed class HarmonyMethod
+    {
+        public HarmonyMethod(MethodInfo method) { }
     }
 
     public sealed class HarmonyPatch : Attribute
@@ -42,6 +47,13 @@ namespace HarmonyLib
 
     public static class AccessTools
     {
+        public static Type TypeByName(string name) => null;
+
+        public static MethodInfo Method(Type type, string name)
+        {
+            return type?.GetMethod(name, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+        }
+
         public static FieldInfo Field(Type type, string name)
         {
             return type.GetField(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
@@ -100,6 +112,11 @@ namespace UnityEngine
         }
     }
 
+    public struct Vector3
+    {
+        public float x, y, z;
+    }
+
     public static class Mathf
     {
         public static float Max(float first, float second) => Math.Max(first, second);
@@ -116,10 +133,13 @@ namespace UnityEngine
     {
         private readonly Dictionary<int, Color> _colors = new Dictionary<int, Color>();
         private readonly Dictionary<int, Texture> _textures = new Dictionary<int, Texture>();
+        private readonly Dictionary<int, float> _floats = new Dictionary<int, float>();
 
         public bool SupportsColor { get; set; } = true;
         public bool SupportsEmissionColor { get; set; }
         public bool SupportsMarkTexture { get; set; }
+        public bool SupportsHdr { get; set; }
+        public bool SupportsMarkLightness { get; set; }
         public int SetCount { get; private set; }
         public int TextureSetCount { get; private set; }
         public HashSet<string> Keywords { get; } = new HashSet<string>();
@@ -131,6 +151,8 @@ namespace UnityEngine
             SupportsColor = original.SupportsColor;
             SupportsEmissionColor = original.SupportsEmissionColor;
             SupportsMarkTexture = original.SupportsMarkTexture;
+            SupportsHdr = original.SupportsHdr;
+            SupportsMarkLightness = original.SupportsMarkLightness;
             name = original.name;
             foreach (var pair in original._colors)
             {
@@ -139,6 +161,10 @@ namespace UnityEngine
             foreach (var pair in original._textures)
             {
                 _textures[pair.Key] = pair.Value;
+            }
+            foreach (var pair in original._floats)
+            {
+                _floats[pair.Key] = pair.Value;
             }
             foreach (var keyword in original.Keywords)
             {
@@ -152,7 +178,11 @@ namespace UnityEngine
                 ? SupportsColor
                 : property == Shader.PropertyToID("_EmissionColor")
                     ? SupportsEmissionColor
-                : property == Shader.PropertyToID("_MarkTex") && SupportsMarkTexture;
+                : property == Shader.PropertyToID("_MarkTex")
+                    ? SupportsMarkTexture
+                : property == Shader.PropertyToID("_HDR")
+                    ? SupportsHdr
+                : property == Shader.PropertyToID("_MarkLightness") && SupportsMarkLightness;
         }
         public Color GetColor(int property) => _colors[property];
         public void SeedColor(int property, Color color) => _colors[property] = color;
@@ -168,13 +198,52 @@ namespace UnityEngine
             _textures[property] = texture;
             TextureSetCount++;
         }
+        public float GetFloat(int property) => _floats[property];
+        public void SeedFloat(int property, float value) => _floats[property] = value;
+        public void SetFloat(int property, float value) => _floats[property] = value;
         public void EnableKeyword(string keyword) => Keywords.Add(keyword);
+    }
+
+    public sealed class MaterialPropertyBlock
+    {
+        private readonly Dictionary<int, Color> _colors = new Dictionary<int, Color>();
+        private readonly Dictionary<int, float> _floats = new Dictionary<int, float>();
+        private readonly Dictionary<int, Texture> _textures = new Dictionary<int, Texture>();
+
+        public void SetColor(int property, Color color) => _colors[property] = color;
+        public void SetFloat(int property, float value) => _floats[property] = value;
+        public void SetTexture(int property, Texture texture) => _textures[property] = texture;
+        public Color GetColor(int property) => _colors.TryGetValue(property, out var value) ? value : default;
+        public float GetFloat(int property) => _floats.TryGetValue(property, out var value) ? value : 0f;
+        public Texture GetTexture(int property) => _textures.TryGetValue(property, out var value) ? value : null;
+
+        internal void CopyFrom(MaterialPropertyBlock source)
+        {
+            _colors.Clear();
+            _floats.Clear();
+            _textures.Clear();
+            foreach (var pair in source._colors)
+            {
+                _colors[pair.Key] = pair.Value;
+            }
+            foreach (var pair in source._floats)
+            {
+                _floats[pair.Key] = pair.Value;
+            }
+            foreach (var pair in source._textures)
+            {
+                _textures[pair.Key] = pair.Value;
+            }
+        }
     }
 
     public class Renderer : Object
     {
+        private readonly MaterialPropertyBlock _propertyBlock = new MaterialPropertyBlock();
         public Material[] sharedMaterials;
         public Material sharedMaterial => sharedMaterials == null || sharedMaterials.Length == 0 ? null : sharedMaterials[0];
+        public void SetPropertyBlock(MaterialPropertyBlock properties) => _propertyBlock.CopyFrom(properties);
+        public void GetPropertyBlock(MaterialPropertyBlock properties) => properties.CopyFrom(_propertyBlock);
     }
 
     public sealed class MeshRenderer : Renderer { }
@@ -262,11 +331,15 @@ namespace UnityEngine
 
 public sealed class CollimatorSight
 {
+    private static int _nextId;
+    private readonly int _id = ++_nextId;
     public UnityEngine.Material CollimatorMaterial;
     public UnityEngine.MeshRenderer CollimatorMeshRenderer;
+    public int GetInstanceID() => _id;
     public T GetComponent<T>() where T : class => CollimatorMeshRenderer as T;
     public void Awake() { }
     public void OnEnable() { }
+    public void LookAt(UnityEngine.Vector3 direction, UnityEngine.Vector3 position) { }
 }
 
 namespace EFT.CameraControl
@@ -342,6 +415,7 @@ namespace SPTEssentials.Client
     {
         internal ConfigEntry<bool> EnableCustomReticleColor { get; } = new ConfigEntry<bool>(true);
         internal ConfigEntry<Color> ReticleColor { get; } = new ConfigEntry<Color>(Color.red);
+        internal ConfigEntry<float> ReticleIntensity { get; } = new ConfigEntry<float>(1f);
     }
 
     internal static class SPTEssentialsPlugin

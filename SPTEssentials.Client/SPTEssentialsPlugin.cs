@@ -5,9 +5,11 @@ using SPTEssentials.Client.Breacher;
 using SPTEssentials.Client.CompactHud;
 using SPTEssentials.Client.FieldRepair;
 using SPTEssentials.Client.Pause;
+using SPTEssentials.Client.RaidModdable;
 using SPTEssentials.Client.Reload;
 using SPTEssentials.Client.Reticle;
 using SPTEssentials.Client.SpecialSlots;
+using SPTEssentials.Client.Sprint;
 using SPTEssentials.Client.Tripwire;
 
 namespace SPTEssentials.Client;
@@ -15,11 +17,13 @@ namespace SPTEssentials.Client;
 [BepInPlugin(PluginGuid, PluginName, PluginVersion)]
 [BepInDependency("com.SPT.core", "4.1.6")]
 [BepInDependency("com.wtt.commonlib")]
+[BepInDependency("com.ozen.continuousloadammo", BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency("com.vultify.nvgsightdimmer", BepInDependency.DependencyFlags.SoftDependency)]
 public sealed class SPTEssentialsPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "com.senze.sptessentials";
-    internal const string PluginName = "Senze-SPTEssentials";
-    internal const string PluginVersion = "1.5.0";
+    internal const string PluginName = "Senze - SPT Essentials";
+    internal const string PluginVersion = "1.6.0";
 
     internal static ManualLogSource Log { get; private set; }
     internal static EssentialsConfig Settings { get; private set; }
@@ -50,6 +54,9 @@ public sealed class SPTEssentialsPlugin : BaseUnityPlugin
         new ExtraSpecialSlotsLayoutModule().EnableSafely();
         new FieldArmorRepairModule().EnableSafely();
         new RaidOnlyAirFilterModule().EnableSafely();
+        new RaidModdableModule().EnableSafely();
+        new SprintWhileHealingModule().EnableSafely();
+        new SprintWhilePackingMagazinesModule().EnableSafely();
         _reticleColor.EnableSafely();
         _breacher.EnableSafely();
         _breachingCharge.EnableSafely();

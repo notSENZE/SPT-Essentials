@@ -16,10 +16,14 @@ internal sealed class EssentialsConfig
     internal ConfigEntry<bool> EnableCustomReticleColor { get; }
     internal ConfigEntry<bool> EnableBreacher { get; }
     internal ConfigEntry<bool> EnableRaidLongPainRelief { get; }
+    internal ConfigEntry<bool> EnableSprintWhileHealing { get; }
+    internal ConfigEntry<bool> EnableSprintWhilePackingMagazines { get; }
+    internal ConfigEntry<bool> EnableRaidModdable { get; }
     internal ConfigEntry<bool> EnableUpdateCheck { get; }
 
     internal ConfigEntry<KeyboardShortcut> PauseShortcut { get; }
     internal ConfigEntry<Color> ReticleColor { get; }
+    internal ConfigEntry<float> ReticleIntensity { get; }
 
     internal EssentialsConfig(ConfigFile config)
     {
@@ -89,6 +93,24 @@ internal sealed class EssentialsConfig
             true,
             "Makes the pain-relief effect from Ibuprofen and Morphine last for the full raid. Restart SPT after changing this option."
         );
+        EnableSprintWhileHealing = config.Bind(
+            "01 - Modules",
+            "Enable Sprint While Healing",
+            true,
+            "Allows sprinting while using normal medical items. Surgery kits such as CMS and Surv12 remain restricted."
+        );
+        EnableSprintWhilePackingMagazines = config.Bind(
+            "01 - Modules",
+            "Enable Sprint While Packing Magazines",
+            true,
+            "Removes the sprint and movement-speed restrictions applied by Continuous Load Ammo while packing magazines outside the inventory."
+        );
+        EnableRaidModdable = config.Bind(
+            "01 - Modules",
+            "Enable Raid Moddable",
+            true,
+            "Allows tool-moddable attachments and handguards to be installed or removed during a raid while carrying a Leatherman Multitool."
+        );
         EnableUpdateCheck = config.Bind(
             "04 - Updates",
             "Enable Update Check",
@@ -106,6 +128,14 @@ internal sealed class EssentialsConfig
             "Reticle Color",
             Color.red,
             "Global color for supported illuminated reticles. Changes apply immediately."
+        );
+        ReticleIntensity = config.Bind(
+            "03 - Reticle",
+            "Reticle Intensity",
+            1f,
+            new ConfigDescription(
+                "Brightness and opacity multiplier for supported illuminated reticles. Changes apply immediately.",
+                new AcceptableValueRange<float>(0.1f, 5f))
         );
     }
 }

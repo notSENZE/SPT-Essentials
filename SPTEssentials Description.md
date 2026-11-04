@@ -12,8 +12,12 @@ If you have any issues with my mods, please contact me directly on Discord.
 “SPT Essentials” is a type of mod pack that includes many different, modular mods that can be turned on and off in the F12 menu,
 allowing you to choose which ones should remain active.
 
-**SPT version:** ~4.1.6  
+**SPT version:** ~4.1.6
+
 **Dependencies:** [WTT-CommonLib 3.x](https://github.com/ArysWasTaken/WeaponTemplateToolbox)
+
+**Optional compatibility:** Continuous Load Ammo 1.2.x and NVG Sight Dimmer 2.1.x
+
 **FIKA compatible:** unknown
 **License**: MIT
 
@@ -27,11 +31,14 @@ allowing you to choose which ones should remain active.
 - **Compatibility Rules** lets you extend item, container, Special Slot, weapon and attachment filters through one readable JSONC file.
 - **Compact HUD** shows total health, energy, hydration and grenades that are ready in your rig or pockets. It can be moved, scaled and arranged horizontally or vertically.
 [![CHUD.png](https://i.postimg.cc/SRffTmss/CHUD.png)](https://postimg.cc/tn767QFQ)
-- **Custom Reticle Color** makes it possible to change the reticle of _some_ scopes.
+- **Custom Reticle Color** makes it possible to change the color and intensity of the reticle on _some_ scopes. Both settings update live, so a reticle can be brightened when snow or strong daylight makes it difficult to see.
 [![Reticle-color.png](https://i.postimg.cc/QtVmL9mk/Reticle-color.png)](https://postimg.cc/2bRhh5PV)
 - **Keep tripwire installation kit** gives you the possibilty to disarm a tripwire installation kit without losing it (works only with Leatherman Multitool).
 - **Breacher** lets you shoot open the lock of a hinged door, including metal and barred doors. This requires the Door Breacher Shotgun. Normal locked doors take four hits with either 12/70 door breacher .50 BMG slugs or 12/70 AP-20 superslugs. Marked Rooms take six AP-20 superslugs. The RShG-2 opens a directly hit door with one explosive shot, without requiring a lock hit. The module also adds a Breaching Charge with a five-second fuse. It can be attached to regular, keycard and sliding doors, and removed again by holding `F` for one second while there is room in your inventory. Extraction doors and scripted map gates are deliberately left alone. The charge appears in suitable loot containers and on the Flea Market with a base price of 350,000 roubles.
 - **Raid-Long Pain Relief** makes the pain-relief effect from Ibuprofen and Morphine last for the full raid. Their consumption, number of uses and original side effects remain unchanged.
+- **Sprint While Healing** lets you sprint while using normal medical items. Surgery remains restricted, including CMS and Surv12, and ordinary sprint limitations such as damaged legs still apply.
+- **Sprint While Packing Magazines** removes the sprint and movement-speed restrictions from Continuous Load Ammo while that mod is filling a magazine outside the inventory. Continuous Load Ammo remains responsible for the actual loading process and is not required for the rest of SPT Essentials.
+- **Raid Moddable** lets you install or remove tool-moddable attachments and handguards during a raid while carrying a Leatherman Multitool. Normal weapon, slot and attachment compatibility rules still apply. Removing a vital part can leave the weapon unusable until it is assembled again.
 - **Update Check** checks my GitHub releases when the server starts and prints a message when a newer SPT Essentials version is available. It can be disabled in the F12 menu.
 
 # INSTALLATION AND SETTINGS
@@ -40,12 +47,14 @@ Copy the contents of the release into your main SPT folder and allow Windows to 
 
 Press `F12` in game to enable or disable individual modules and adjust Raid Pause or Compact HUD. Compact HUD uses `F10` for edit mode and `F9` to restore its default position.
 
+Reticle color and intensity can also be changed in the F12 menu and update immediately. Sprint While Packing Magazines only does anything when Continuous Load Ammo is installed; it does not replace that mod.
+
 Field Repair, Smart Air Filter, Expanded Special Slots, Compatibility Rules, Breacher and Raid-Long Pain Relief also change server-side behavior. Update Check runs when the server starts. Restart both the SPT server and the game after changing one of those switches.
 
 Compatibility rules live here:
 
 ```text
-SPT_Runtime/user/mods/SPTEssentials/config/compat/compatibility.jsonc
+SPT_Runtime/user/mods/SENZE - SPT Essentials.Server/config/compat/compatibility.jsonc
 ```
 
 The file contains commented examples. Add your template IDs, keep `REPLACE` set to `false` unless you intentionally want to clear an existing filter, then restart SPT.
@@ -69,6 +78,8 @@ I wrote **Compact HUD** independently as a lightweight take on the general HUD c
 Compact HUD uses the unmodified **HarmonyOS Sans Black** font. Copyright 2021 Huawei Device Co., Ltd. It is included under the HarmonyOS Sans Fonts License Agreement, whose full text is provided in `licenses/HarmonyOS-Sans-License.txt`.
 
 I wrote **Breacher** independently for SPT Essentials. It uses SPT's own hit and door behavior and contains no code from another door-breaching mod.
+
+**Sprint While Packing Magazines** is an independently written compatibility patch. It contains no Continuous Load Ammo code and only prevents that mod from applying its sprint and movement-speed restrictions when it is detected.
 
 The Breaching Charge uses a legally purchased [**Sticky Bomb Low-Poly**](https://www.cgtrader.com/3d-models/military/other/sticky-bomb-low-poly) model by **Artistic-Studios** under the CGTrader Royalty Free License. I distribute only the compiled in-game AssetBundle; the seller's original FBX, OBJ, Blend, GLB and texture source files are not included in the repository or release.
 

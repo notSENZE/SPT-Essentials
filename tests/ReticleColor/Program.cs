@@ -17,11 +17,20 @@ var opticTrack = typeof(CustomReticleColorModule).GetMethod(
     null,
     new[] { typeof(OpticSight) },
     null);
+var collimatorTrack = typeof(CustomReticleColorModule).GetMethod(
+    "Track",
+    BindingFlags.Instance | BindingFlags.NonPublic,
+    null,
+    new[] { typeof(CollimatorSight) },
+    null);
 var activeOpticTrack = typeof(CustomReticleColorModule).GetMethod(
     "TrackActiveOptic",
     BindingFlags.Instance | BindingFlags.NonPublic);
 var activeMaterialTrack = typeof(CustomReticleColorModule).GetMethod(
     "TrackActiveMaterial",
+    BindingFlags.Instance | BindingFlags.NonPublic);
+var applyAfterNvgSightDimmer = typeof(CustomReticleColorModule).GetMethod(
+    "ApplyAfterNvgSightDimmer",
     BindingFlags.Instance | BindingFlags.NonPublic);
 var enable = typeof(CustomReticleColorModule).GetMethod("Enable", BindingFlags.Instance | BindingFlags.NonPublic);
 var passed = 0;
@@ -50,11 +59,18 @@ var converted = CustomReticleColorModule.BuildReticleColor(
     new Color(0.25f, 0.5f, 1f, 0.1f));
 Check(IsColor(converted, 0.75f, 1.5f, 3f, 0.4f), "selected hue keeps original HDR intensity and alpha");
 
+var intensified = CustomReticleColorModule.BuildReticleColor(
+    new Color(0.2f, 3f, 0.5f, 0.4f),
+    new Color(0.25f, 0.5f, 1f, 0.1f),
+    2f);
+Check(IsColor(intensified, 1.5f, 3f, 6f, 0.4f), "fallback intensity multiplier raises RGB brightness and preserves alpha");
+
 var module = new CustomReticleColorModule();
 enable.Invoke(module, null);
 
 SPTEssentialsPlugin.Settings.EnableCustomReticleColor.Value = true;
 SPTEssentialsPlugin.Settings.ReticleColor.Value = new Color(1f, 0f, 0f, 1f);
+SPTEssentialsPlugin.Settings.ReticleIntensity.Value = 1f;
 var material = new Material();
 material.SeedColor(colorProperty, new Color(0f, 2f, 0f, 0.6f));
 materialTrack.Invoke(module, new object[] { material });
@@ -62,6 +78,45 @@ Check(IsColor(material.GetColor(colorProperty), 2f, 0f, 0f, 0.6f), "tracked sigh
 
 SPTEssentialsPlugin.Settings.ReticleColor.Value = new Color(0f, 0.5f, 1f, 1f);
 Check(IsColor(material.GetColor(colorProperty), 0f, 1f, 2f, 0.6f), "color changes update tracked sights immediately");
+
+SPTEssentialsPlugin.Settings.ReticleIntensity.Value = 2f;
+Check(IsColor(material.GetColor(colorProperty), 0f, 2f, 4f, 0.6f), "fallback intensity changes update tracked sights immediately");
+SPTEssentialsPlugin.Settings.ReticleIntensity.Value = 1f;
+
+var hdrProperty = Shader.PropertyToID("_HDR");
+var hdrMaterial = new Material { SupportsHdr = true };
+hdrMaterial.SeedColor(colorProperty, new Color(1f, 0.1f, 0.1f, 1f));
+hdrMaterial.SeedFloat(hdrProperty, 3f);
+materialTrack.Invoke(module, new object[] { hdrMaterial });
+SPTEssentialsPlugin.Settings.ReticleIntensity.Value = 5f;
+Check(IsColor(hdrMaterial.GetColor(colorProperty), 0f, 0.5f, 1f, 1f), "collimator color keeps its original RGB intensity when _HDR is available");
+Check(Math.Abs(hdrMaterial.GetFloat(hdrProperty) - 15f) < 0.0001f, "collimator intensity scales the shader _HDR value");
+SPTEssentialsPlugin.Settings.ReticleIntensity.Value = 1f;
+
+var renderedCollimatorMaterial = new Material { SupportsHdr = true };
+renderedCollimatorMaterial.SeedColor(colorProperty, new Color(1f, 0.1f, 0.1f, 1f));
+renderedCollimatorMaterial.SeedFloat(hdrProperty, 4f);
+var renderedCollimator = new CollimatorSight
+{
+    CollimatorMaterial = renderedCollimatorMaterial,
+    CollimatorMeshRenderer = new MeshRenderer { sharedMaterials = new[] { renderedCollimatorMaterial } }
+};
+collimatorTrack.Invoke(module, new object[] { renderedCollimator });
+SPTEssentialsPlugin.Settings.ReticleIntensity.Value = 5f;
+var renderedProperties = new MaterialPropertyBlock();
+renderedCollimator.CollimatorMeshRenderer.GetPropertyBlock(renderedProperties);
+Check(Math.Abs(renderedProperties.GetFloat(hdrProperty) - 20f) < 0.0001f, "collimator renderer receives the scaled _HDR override");
+Check(IsColor(renderedProperties.GetColor(colorProperty), 0f, 0.5f, 1f, 1f), "collimator renderer receives the selected reticle color");
+
+var dimmerProperties = new MaterialPropertyBlock();
+dimmerProperties.SetFloat(hdrProperty, 1.2f);
+dimmerProperties.SetColor(colorProperty, Color.red);
+renderedCollimator.CollimatorMeshRenderer.SetPropertyBlock(dimmerProperties);
+applyAfterNvgSightDimmer.Invoke(module, null);
+renderedCollimator.CollimatorMeshRenderer.GetPropertyBlock(renderedProperties);
+Check(Math.Abs(renderedProperties.GetFloat(hdrProperty) - 6f) < 0.0001f, "NVG dimmer brightness is multiplied by the selected intensity");
+Check(IsColor(renderedProperties.GetColor(colorProperty), 0f, 0.5f, 1f, 1f), "selected color is restored after NVG Sight Dimmer updates");
+SPTEssentialsPlugin.Settings.ReticleIntensity.Value = 1f;
 
 materialTrack.Invoke(module, new object[] { material });
 SPTEssentialsPlugin.Settings.EnableCustomReticleColor.Value = false;
@@ -126,11 +181,20 @@ Check(IsColor(generatedReticleMaterial.GetColor(emissionColorProperty), 0f, 1f, 
 Check(generatedReticleMaterial.Keywords.Contains("_EMISSION"), "mesh reticle emission is enabled");
 Check(IsColor(lensMaterial.GetColor(colorProperty), 0.5f, 0.5f, 0.5f, 0.75f), "marked lens material color is left untouched");
 var generatedMarkTexture = (Texture2D)lensMaterial.GetTexture(markTextureProperty);
+var lensProperties = new MaterialPropertyBlock();
+optic.LensRenderer.GetPropertyBlock(lensProperties);
 var changedPixels = generatedMarkTexture.GetPixels32();
 Check(generatedMarkTexture != markTexture, "marked lens receives a generated texture copy");
+Check(lensProperties.GetTexture(markTextureProperty) == generatedMarkTexture, "generated mark texture overrides external renderer changes");
 Check(changedPixels[0].r == 0 && changedPixels[0].g == 0 && changedPixels[0].b == 0, "black texture pixels remain black");
 Check(changedPixels[1].r == 0 && changedPixels[1].g == 200 && changedPixels[1].b == 0 && changedPixels[1].a == 180, "colored texture pixels use the selected color");
 Check(changedPixels[2].r == 90 && changedPixels[2].g == 90 && changedPixels[2].b == 90 && changedPixels[2].a == 120, "neutral texture pixels remain unchanged");
+
+var intensePixels = CustomReticleColorModule.BuildReticleTextureColors(
+    new[] { new Color32(200, 0, 10, 120) },
+    new Color(1f, 0f, 0f, 1f),
+    2f);
+Check(intensePixels[0].r == 255 && intensePixels[0].a == 240, "texture intensity raises brightness and opacity");
 
 activeOpticTrack.Invoke(module, new object[] { opticRetrice, optic });
 Check(opticRetrice.Renderer.sharedMesh == reticleMesh, "mesh geometry remains untouched during active binding");

@@ -12,7 +12,9 @@ internal sealed class CustomReticleColorModule : ClientModule
 {
     private static readonly int ColorProperty = Shader.PropertyToID("_Color");
     private static readonly int EmissionColorProperty = Shader.PropertyToID("_EmissionColor");
+    private static readonly int HdrProperty = Shader.PropertyToID("_HDR");
     private static readonly int MarkTextureProperty = Shader.PropertyToID("_MarkTex");
+    private static readonly int MarkLightnessProperty = Shader.PropertyToID("_MarkLightness");
     private static readonly FieldInfo ActiveMaterialField = AccessTools.Field(typeof(OpticRetrice), "_material");
     private static CustomReticleColorModule _instance;
 
@@ -22,6 +24,8 @@ internal sealed class CustomReticleColorModule : ClientModule
     private readonly Dictionary<int, ActiveOpticMaterialState> _activeMaterials = new Dictionary<int, ActiveOpticMaterialState>();
     private readonly Dictionary<int, ActiveOpticMaterialState> _generatedActiveMaterials = new Dictionary<int, ActiveOpticMaterialState>();
     private readonly Dictionary<int, ActiveOpticBinding> _activeOptics = new Dictionary<int, ActiveOpticBinding>();
+    private readonly Dictionary<int, CollimatorBinding> _collimators = new Dictionary<int, CollimatorBinding>();
+    private readonly Dictionary<int, LensTextureBinding> _lensTextures = new Dictionary<int, LensTextureBinding>();
     private readonly HashSet<int> _failedTextureMaterials = new HashSet<int>();
     private readonly HashSet<int> _loggedOptics = new HashSet<int>();
 
@@ -32,20 +36,24 @@ internal sealed class CustomReticleColorModule : ClientModule
         _instance = this;
         SPTEssentialsPlugin.Settings.EnableCustomReticleColor.SettingChanged += OnSettingChanged;
         SPTEssentialsPlugin.Settings.ReticleColor.SettingChanged += OnSettingChanged;
+        SPTEssentialsPlugin.Settings.ReticleIntensity.SettingChanged += OnSettingChanged;
 
         Patch(_harmony, typeof(CollimatorAwakePatch));
         Patch(_harmony, typeof(CollimatorEnabledPatch));
+        Patch(_harmony, typeof(CollimatorLookAtPatch));
         Patch(_harmony, typeof(OpticAwakePatch));
         Patch(_harmony, typeof(OpticEnabledPatch));
         Patch(_harmony, typeof(ActiveOpticPatch));
         Patch(_harmony, typeof(ActiveOpticRenderPatch));
         Patch(_harmony, typeof(ScopePrefabAwakePatch));
+        EnableNvgSightDimmerCompatibility();
     }
 
     internal void Shutdown()
     {
         SPTEssentialsPlugin.Settings.EnableCustomReticleColor.SettingChanged -= OnSettingChanged;
         SPTEssentialsPlugin.Settings.ReticleColor.SettingChanged -= OnSettingChanged;
+        SPTEssentialsPlugin.Settings.ReticleIntensity.SettingChanged -= OnSettingChanged;
         RestoreOriginalState();
         _materials.Clear();
         DestroyGeneratedAssets();
@@ -53,6 +61,8 @@ internal sealed class CustomReticleColorModule : ClientModule
         _activeMaterials.Clear();
         _generatedActiveMaterials.Clear();
         _activeOptics.Clear();
+        _collimators.Clear();
+        _lensTextures.Clear();
         _failedTextureMaterials.Clear();
         _loggedOptics.Clear();
         _harmony.UnpatchSelf();
@@ -78,7 +88,13 @@ internal sealed class CustomReticleColorModule : ClientModule
         var materialId = material.GetInstanceID();
         if (!_materials.ContainsKey(materialId))
         {
-            _materials.Add(materialId, new ReticleMaterialState(material, material.GetColor(ColorProperty)));
+            _materials.Add(
+                materialId,
+                new ReticleMaterialState(
+                    material,
+                    material.GetColor(ColorProperty),
+                    material.HasProperty(HdrProperty),
+                    material.HasProperty(HdrProperty) ? material.GetFloat(HdrProperty) : 0f));
         }
 
         ApplyCurrentSetting(_materials[materialId]);
@@ -92,7 +108,21 @@ internal sealed class CustomReticleColorModule : ClientModule
         }
 
         var renderer = sight.CollimatorMeshRenderer ?? sight.GetComponent<MeshRenderer>();
-        Track(sight.CollimatorMaterial ?? renderer?.sharedMaterial);
+        var material = sight.CollimatorMaterial ?? renderer?.sharedMaterial;
+
+        if (renderer == null || material == null || !material.HasProperty(ColorProperty))
+        {
+            return;
+        }
+
+        var sightId = sight.GetInstanceID();
+        if (!_collimators.TryGetValue(sightId, out var binding))
+        {
+            binding = new CollimatorBinding(sight, renderer, material);
+            _collimators.Add(sightId, binding);
+        }
+
+        ApplyCurrentSetting(binding);
     }
 
     private void Track(OpticSight sight)
@@ -118,35 +148,49 @@ internal sealed class CustomReticleColorModule : ClientModule
         {
             if (material != null && material.HasProperty(MarkTextureProperty))
             {
-                TrackMarkTexture(material);
+                var textureState = TrackMarkTexture(material);
+                if (textureState == null)
+                {
+                    continue;
+                }
+
+                var rendererId = sight.LensRenderer.GetInstanceID();
+                if (!_lensTextures.ContainsKey(rendererId))
+                {
+                    _lensTextures.Add(
+                        rendererId,
+                        new LensTextureBinding(sight.LensRenderer, textureState));
+                }
+
+                ApplyCurrentSetting(_lensTextures[rendererId]);
             }
         }
     }
 
-    private void TrackMarkTexture(Material material)
+    private ReticleTextureState TrackMarkTexture(Material material)
     {
         if (material == null)
         {
-            return;
+            return null;
         }
 
         var materialId = material.GetInstanceID();
         if (_textures.TryGetValue(materialId, out var existingState))
         {
             ApplyCurrentSetting(existingState);
-            return;
+            return existingState;
         }
 
         if (_failedTextureMaterials.Contains(materialId))
         {
-            return;
+            return null;
         }
 
         var originalTexture = material.GetTexture(MarkTextureProperty) as Texture2D;
         if (originalTexture == null)
         {
             _failedTextureMaterials.Add(materialId);
-            return;
+            return null;
         }
 
         try
@@ -156,16 +200,72 @@ internal sealed class CustomReticleColorModule : ClientModule
                 material,
                 originalTexture,
                 generatedTexture,
-                generatedTexture.GetPixels32());
+                generatedTexture.GetPixels32(),
+                material.HasProperty(MarkLightnessProperty),
+                material.HasProperty(MarkLightnessProperty)
+                    ? material.GetFloat(MarkLightnessProperty)
+                    : 0f);
 
             _textures.Add(materialId, state);
             ApplyCurrentSetting(state);
+            return state;
         }
         catch (Exception exception)
         {
             _failedTextureMaterials.Add(materialId);
             SPTEssentialsPlugin.Log.LogWarning(
                 $"Custom Reticle Color could not read '{originalTexture.name}': {exception.Message}");
+            return null;
+        }
+    }
+
+    private void EnableNvgSightDimmerCompatibility()
+    {
+        var pluginType = AccessTools.TypeByName("NVGSightDimmer.NVGSightDimmerPlugin");
+        var updateSights = pluginType == null
+            ? null
+            : AccessTools.Method(pluginType, "UpdateSights");
+
+        if (updateSights == null)
+        {
+            return;
+        }
+
+        var postfix = AccessTools.Method(
+            typeof(NvgSightDimmerUpdatePatch),
+            nameof(NvgSightDimmerUpdatePatch.Postfix));
+        _harmony.Patch(updateSights, postfix: new HarmonyMethod(postfix));
+        SPTEssentialsPlugin.Log.LogInfo("Custom Reticle Color: NVG Sight Dimmer compatibility enabled.");
+    }
+
+    private void ApplyAfterNvgSightDimmer()
+    {
+        if (!SPTEssentialsPlugin.Settings.EnableCustomReticleColor.Value)
+        {
+            return;
+        }
+
+        foreach (var binding in _collimators.Values)
+        {
+            if (binding.Renderer == null)
+            {
+                continue;
+            }
+
+            binding.Renderer.GetPropertyBlock(binding.WorkingPropertyBlock);
+            var externalHdr = binding.HasHdrProperty
+                ? binding.WorkingPropertyBlock.GetFloat(HdrProperty)
+                : 0f;
+            binding.ExternalHdr = externalHdr > 0f ? externalHdr : binding.OriginalHdr;
+            ApplyCurrentSetting(binding);
+        }
+
+        foreach (var binding in _lensTextures.Values)
+        {
+            if (binding.Renderer != null)
+            {
+                ApplyCurrentSetting(binding);
+            }
         }
     }
 
@@ -315,15 +415,102 @@ internal sealed class CustomReticleColorModule : ClientModule
         {
             _activeOptics.Remove(opticId);
         }
+
+        var staleCollimatorIds = new List<int>();
+        foreach (var pair in _collimators)
+        {
+            if (pair.Value.Sight == null || pair.Value.Renderer == null || pair.Value.Material == null)
+            {
+                staleCollimatorIds.Add(pair.Key);
+                continue;
+            }
+
+            ApplyCurrentSetting(pair.Value);
+        }
+
+        foreach (var sightId in staleCollimatorIds)
+        {
+            _collimators.Remove(sightId);
+        }
+
+        var staleLensIds = new List<int>();
+        foreach (var pair in _lensTextures)
+        {
+            if (pair.Value.Renderer == null
+                || pair.Value.TextureState.GeneratedTexture == null)
+            {
+                staleLensIds.Add(pair.Key);
+                continue;
+            }
+
+            ApplyCurrentSetting(pair.Value);
+        }
+
+        foreach (var rendererId in staleLensIds)
+        {
+            _lensTextures.Remove(rendererId);
+        }
+    }
+
+    private static void ApplyCurrentSetting(CollimatorBinding binding)
+    {
+        if (!SPTEssentialsPlugin.Settings.EnableCustomReticleColor.Value)
+        {
+            binding.Renderer.SetPropertyBlock(binding.OriginalPropertyBlock);
+            return;
+        }
+
+        binding.Renderer.GetPropertyBlock(binding.WorkingPropertyBlock);
+        binding.WorkingPropertyBlock.SetColor(
+            ColorProperty,
+            BuildReticleColor(
+                binding.OriginalColor,
+                SPTEssentialsPlugin.Settings.ReticleColor.Value,
+                1f));
+
+        if (binding.HasHdrProperty)
+        {
+            binding.WorkingPropertyBlock.SetFloat(
+                HdrProperty,
+                binding.ExternalHdr * SPTEssentialsPlugin.Settings.ReticleIntensity.Value);
+        }
+
+        binding.Renderer.SetPropertyBlock(binding.WorkingPropertyBlock);
+    }
+
+    private static void ApplyCurrentSetting(LensTextureBinding binding)
+    {
+        if (!SPTEssentialsPlugin.Settings.EnableCustomReticleColor.Value)
+        {
+            binding.Renderer.SetPropertyBlock(binding.OriginalPropertyBlock);
+            return;
+        }
+
+        binding.Renderer.GetPropertyBlock(binding.WorkingPropertyBlock);
+        binding.WorkingPropertyBlock.SetTexture(
+            MarkTextureProperty,
+            binding.TextureState.GeneratedTexture);
+        binding.Renderer.SetPropertyBlock(binding.WorkingPropertyBlock);
     }
 
     private static void ApplyCurrentSetting(ReticleMaterialState state)
     {
-        var color = SPTEssentialsPlugin.Settings.EnableCustomReticleColor.Value
-            ? BuildReticleColor(state.OriginalColor, SPTEssentialsPlugin.Settings.ReticleColor.Value)
+        var enabled = SPTEssentialsPlugin.Settings.EnableCustomReticleColor.Value;
+        var intensity = SPTEssentialsPlugin.Settings.ReticleIntensity.Value;
+        var color = enabled
+            ? BuildReticleColor(
+                state.OriginalColor,
+                SPTEssentialsPlugin.Settings.ReticleColor.Value,
+                state.HasHdrProperty ? 1f : intensity)
             : state.OriginalColor;
 
         state.Material.SetColor(ColorProperty, color);
+        if (state.HasHdrProperty)
+        {
+            state.Material.SetFloat(
+                HdrProperty,
+                enabled ? state.OriginalHdr * intensity : state.OriginalHdr);
+        }
     }
 
     private static void ApplyCurrentSetting(ReticleTextureState state)
@@ -331,13 +518,26 @@ internal sealed class CustomReticleColorModule : ClientModule
         if (!SPTEssentialsPlugin.Settings.EnableCustomReticleColor.Value)
         {
             state.Material.SetTexture(MarkTextureProperty, state.OriginalTexture);
+            if (state.HasMarkLightnessProperty)
+            {
+                state.Material.SetFloat(MarkLightnessProperty, state.OriginalMarkLightness);
+            }
             return;
         }
 
         state.GeneratedTexture.SetPixels32(
-            BuildReticleTextureColors(state.OriginalPixels, SPTEssentialsPlugin.Settings.ReticleColor.Value));
+            BuildReticleTextureColors(
+                state.OriginalPixels,
+                SPTEssentialsPlugin.Settings.ReticleColor.Value,
+                SPTEssentialsPlugin.Settings.ReticleIntensity.Value));
         state.GeneratedTexture.Apply(true, false);
         state.Material.SetTexture(MarkTextureProperty, state.GeneratedTexture);
+        if (state.HasMarkLightnessProperty)
+        {
+            state.Material.SetFloat(
+                MarkLightnessProperty,
+                state.OriginalMarkLightness * SPTEssentialsPlugin.Settings.ReticleIntensity.Value);
+        }
     }
 
     private static void ApplyCurrentSetting(ActiveOpticBinding binding)
@@ -345,7 +545,9 @@ internal sealed class CustomReticleColorModule : ClientModule
         var enabled = SPTEssentialsPlugin.Settings.EnableCustomReticleColor.Value;
         if (enabled)
         {
-            binding.State.Apply(SPTEssentialsPlugin.Settings.ReticleColor.Value);
+            binding.State.Apply(
+                SPTEssentialsPlugin.Settings.ReticleColor.Value,
+                SPTEssentialsPlugin.Settings.ReticleIntensity.Value);
         }
 
         ActiveMaterialField.SetValue(
@@ -360,6 +562,10 @@ internal sealed class CustomReticleColorModule : ClientModule
             if (state.Material != null)
             {
                 state.Material.SetColor(ColorProperty, state.OriginalColor);
+                if (state.HasHdrProperty)
+                {
+                    state.Material.SetFloat(HdrProperty, state.OriginalHdr);
+                }
             }
         }
 
@@ -368,6 +574,10 @@ internal sealed class CustomReticleColorModule : ClientModule
             if (state.Material != null)
             {
                 state.Material.SetTexture(MarkTextureProperty, state.OriginalTexture);
+                if (state.HasMarkLightnessProperty)
+                {
+                    state.Material.SetFloat(MarkLightnessProperty, state.OriginalMarkLightness);
+                }
             }
         }
 
@@ -376,6 +586,22 @@ internal sealed class CustomReticleColorModule : ClientModule
             if (binding.OpticRetrice != null && binding.State.OriginalMaterial != null)
             {
                 ActiveMaterialField.SetValue(binding.OpticRetrice, binding.State.OriginalMaterial);
+            }
+        }
+
+        foreach (var binding in _collimators.Values)
+        {
+            if (binding.Renderer != null)
+            {
+                binding.Renderer.SetPropertyBlock(binding.OriginalPropertyBlock);
+            }
+        }
+
+        foreach (var binding in _lensTextures.Values)
+        {
+            if (binding.Renderer != null)
+            {
+                binding.Renderer.SetPropertyBlock(binding.OriginalPropertyBlock);
             }
         }
     }
@@ -395,15 +621,28 @@ internal sealed class CustomReticleColorModule : ClientModule
 
     internal static Color BuildReticleColor(Color originalColor, Color selectedColor)
     {
+        return BuildReticleColor(originalColor, selectedColor, 1f);
+    }
+
+    internal static Color BuildReticleColor(Color originalColor, Color selectedColor, float intensity)
+    {
         var originalIntensity = Mathf.Max(originalColor.r, Mathf.Max(originalColor.g, originalColor.b));
         return new Color(
-            selectedColor.r * originalIntensity,
-            selectedColor.g * originalIntensity,
-            selectedColor.b * originalIntensity,
+            selectedColor.r * originalIntensity * intensity,
+            selectedColor.g * originalIntensity * intensity,
+            selectedColor.b * originalIntensity * intensity,
             originalColor.a);
     }
 
     internal static Color32[] BuildReticleTextureColors(Color32[] originalColors, Color selectedColor)
+    {
+        return BuildReticleTextureColors(originalColors, selectedColor, 1f);
+    }
+
+    internal static Color32[] BuildReticleTextureColors(
+        Color32[] originalColors,
+        Color selectedColor,
+        float intensity)
     {
         var colors = new Color32[originalColors.Length];
 
@@ -420,10 +659,10 @@ internal sealed class CustomReticleColorModule : ClientModule
             }
 
             colors[index] = new Color32(
-                ToByte(selectedColor.r * maximum),
-                ToByte(selectedColor.g * maximum),
-                ToByte(selectedColor.b * maximum),
-                original.a);
+                ToByte(selectedColor.r * maximum * intensity),
+                ToByte(selectedColor.g * maximum * intensity),
+                ToByte(selectedColor.b * maximum * intensity),
+                ToByte(original.a * intensity));
         }
 
         return colors;
@@ -477,6 +716,16 @@ internal sealed class CustomReticleColorModule : ClientModule
 
     [HarmonyPatch(typeof(CollimatorSight), nameof(CollimatorSight.OnEnable))]
     private static class CollimatorEnabledPatch
+    {
+        [HarmonyPostfix]
+        private static void Postfix(CollimatorSight __instance)
+        {
+            _instance?.Track(__instance);
+        }
+    }
+
+    [HarmonyPatch(typeof(CollimatorSight), nameof(CollimatorSight.LookAt))]
+    private static class CollimatorLookAtPatch
     {
         [HarmonyPostfix]
         private static void Postfix(CollimatorSight __instance)
@@ -554,15 +803,31 @@ internal sealed class CustomReticleColorModule : ClientModule
         }
     }
 
+    private static class NvgSightDimmerUpdatePatch
+    {
+        internal static void Postfix()
+        {
+            _instance?.ApplyAfterNvgSightDimmer();
+        }
+    }
+
     private sealed class ReticleMaterialState
     {
         internal Material Material { get; }
         internal Color OriginalColor { get; }
+        internal bool HasHdrProperty { get; }
+        internal float OriginalHdr { get; }
 
-        internal ReticleMaterialState(Material material, Color originalColor)
+        internal ReticleMaterialState(
+            Material material,
+            Color originalColor,
+            bool hasHdrProperty,
+            float originalHdr)
         {
             Material = material;
             OriginalColor = originalColor;
+            HasHdrProperty = hasHdrProperty;
+            OriginalHdr = originalHdr;
         }
     }
 
@@ -572,17 +837,23 @@ internal sealed class CustomReticleColorModule : ClientModule
         internal Texture2D OriginalTexture { get; }
         internal Texture2D GeneratedTexture { get; }
         internal Color32[] OriginalPixels { get; }
+        internal bool HasMarkLightnessProperty { get; }
+        internal float OriginalMarkLightness { get; }
 
         internal ReticleTextureState(
             Material material,
             Texture2D originalTexture,
             Texture2D generatedTexture,
-            Color32[] originalPixels)
+            Color32[] originalPixels,
+            bool hasMarkLightnessProperty,
+            float originalMarkLightness)
         {
             Material = material;
             OriginalTexture = originalTexture;
             GeneratedTexture = generatedTexture;
             OriginalPixels = (Color32[])originalPixels.Clone();
+            HasMarkLightnessProperty = hasMarkLightnessProperty;
+            OriginalMarkLightness = originalMarkLightness;
         }
 
         internal void DestroyGeneratedTexture()
@@ -610,14 +881,18 @@ internal sealed class CustomReticleColorModule : ClientModule
             OriginalColor = originalColor;
         }
 
-        internal void Apply(Color selectedColor)
+        internal void Apply(Color selectedColor, float intensity)
         {
             GeneratedMaterial.SetColor(
                 ColorProperty,
                 new Color(0f, 0f, 0f, OriginalColor.a));
             GeneratedMaterial.SetColor(
                 EmissionColorProperty,
-                new Color(selectedColor.r, selectedColor.g, selectedColor.b, 1f));
+                new Color(
+                    selectedColor.r * intensity,
+                    selectedColor.g * intensity,
+                    selectedColor.b * intensity,
+                    1f));
             GeneratedMaterial.EnableKeyword("_EMISSION");
         }
 
@@ -639,6 +914,50 @@ internal sealed class CustomReticleColorModule : ClientModule
         {
             OpticRetrice = opticRetrice;
             State = state;
+        }
+    }
+
+    private sealed class CollimatorBinding
+    {
+        internal CollimatorSight Sight { get; }
+        internal MeshRenderer Renderer { get; }
+        internal Material Material { get; }
+        internal Color OriginalColor { get; }
+        internal bool HasHdrProperty { get; }
+        internal float OriginalHdr { get; }
+        internal float ExternalHdr { get; set; }
+        internal MaterialPropertyBlock OriginalPropertyBlock { get; }
+        internal MaterialPropertyBlock WorkingPropertyBlock { get; }
+
+        internal CollimatorBinding(CollimatorSight sight, MeshRenderer renderer, Material material)
+        {
+            Sight = sight;
+            Renderer = renderer;
+            Material = material;
+            OriginalColor = material.GetColor(ColorProperty);
+            HasHdrProperty = material.HasProperty(HdrProperty);
+            OriginalHdr = HasHdrProperty ? material.GetFloat(HdrProperty) : 0f;
+            ExternalHdr = OriginalHdr;
+            OriginalPropertyBlock = new MaterialPropertyBlock();
+            WorkingPropertyBlock = new MaterialPropertyBlock();
+            renderer.GetPropertyBlock(OriginalPropertyBlock);
+        }
+    }
+
+    private sealed class LensTextureBinding
+    {
+        internal Renderer Renderer { get; }
+        internal ReticleTextureState TextureState { get; }
+        internal MaterialPropertyBlock OriginalPropertyBlock { get; }
+        internal MaterialPropertyBlock WorkingPropertyBlock { get; }
+
+        internal LensTextureBinding(Renderer renderer, ReticleTextureState textureState)
+        {
+            Renderer = renderer;
+            TextureState = textureState;
+            OriginalPropertyBlock = new MaterialPropertyBlock();
+            WorkingPropertyBlock = new MaterialPropertyBlock();
+            renderer.GetPropertyBlock(OriginalPropertyBlock);
         }
     }
 }
