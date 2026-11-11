@@ -39,7 +39,7 @@ A small HUD that constantly displays your health, energy, hydration, and grenade
 **CUSTOM RETICLE COLOR**  
 Give your reticle a new color. You can also adjust how light or dark you want it to be.
 
-**Keep tripwire installation kit**  
+**KEEP TRIPWIRE INSTALLATION KIT**  
 You set a tripwire trap, but no one walks into it? Take it down and bring it back with you.
 You can also disarm Partizan's traps and take them with you.
 You'll need the Leatherman multitool for both.
